@@ -52,7 +52,7 @@ angular.module('adminApp', [])
 		if(!followed_up) return input;
 		var result = [];
 		for (var i = 0; i < input.length; i++) {
-			if(input[i].followed_up)
+			if(!input[i].followed_up)
 				result.push(input[i])
 		};
 		return result;

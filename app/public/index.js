@@ -23,4 +23,8 @@ router.get('/interview', function(req, res){
 	return res.render(config.root + '/public/views/interview');
 });
 
+router.get('/thankyou', function(req, res){
+	return res.render(config.root + '/public/views/thankyou');
+});
+
 module.exports = router;

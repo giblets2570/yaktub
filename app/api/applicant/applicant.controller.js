@@ -95,10 +95,11 @@ exports.start = function(req, res) {
     if(!applicant) { return res.status(401).send('0'); }
     var actionURL = '/api/applicants/recording/' + applicant._id;
     var resp = new twilio.TwimlResponse();
-    resp.say("Hi there, welcome to the Samurai Sales interview. A next button button will appear on your screen.")
+    // resp.say("Hi there, welcome to the Samurai Sales interview. A next button button will appear on your screen.")
     resp.record({
       action: actionURL,
-      maxLength: 1200
+      maxLength: 1200,
+      timeout: 40
     },function(node){
       node.say('Question one. How much experience do you have in sales?');
     });

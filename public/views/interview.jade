@@ -8,7 +8,7 @@ head
   meta(name='description', content='')
   meta(name='author', content='')
   link(rel='icon', href='favicon.ico')
-  title Yak Hub
+  title Samurai Sales Interview
   // Bootstrap core CSS
   link(href='bower_components/bootstrap/dist/css/bootstrap.css', rel='stylesheet')
 
@@ -22,11 +22,22 @@ head
     script(src='https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js')
     |
     script(src='https://oss.maxcdn.com/respond/1.4.2/respond.min.js')
-body(ng-app='interviewApp' ng-controller='interviewCtrl')
-  div.container
-    h1 It's all good
-    button.btn.btn-success(ng-click='startInterview()') Start interview
-    button.btn.btn-danger(ng-click='endInterview()') End interview
+body(ng-app='interviewApp' ng-controller='interviewCtrl' style='background:#34495e; color: white; font-family: sans-serif; font-size: 20px;')
+  .container
+    .row
+      .col-md-6
+        center
+          h1 Samurai Sales Interview
+          p Hi, thank you for your interest in Samurai Sales. Just to recap, this is a telesales position where all the work is done from your browser. We have built an online calling tool that allows you to work from anywhere as a telesales agent. The types of calling campaigns you can work on will vary from client to client.
+          p The purpose of this interview is for us to get a sense of how you sound on the phone. All of this will be recorded, so we can review it at a later date. We have recorded ourselves asking some questions. Once you start the interview, a "Play question" button will appear to the right. Once you've answer this question, you can move to the next question by pressing the "Play question" button again. Once there are no more questions, press "End interview" to finish the interview. You can finish the interview at any time.
+          p After the interview, we will get back to you within a few days to tell you how it went. Best of luck!
+          button.btn.btn-lg.btn-success(ng-click='startInterview()' ng-show='index == -1') Start interview
+          button.btn.btn-lg.btn-danger(ng-click='endInterview()' ng-show='index != -1') End interview
+      .col-md-6(ng-repeat='audio in audios')
+        h3(ng-show='show($index)') Question {{$index+1}}
+        a.btn.btn-primary(onclick="this.firstChild.play()" ng-click='increment()' ng-show='show($index)')
+          audio(ng-src="{{audio}}")
+          | Play question
   // /container
 
   script(src='bower_components/jquery/dist/jquery.min.js')

@@ -9,7 +9,19 @@ angular.module('interviewApp', [])
   $locationProvider.html5Mode(true);
 })
 
-.controller('interviewCtrl', function($scope,$location,$http){
+.controller('interviewCtrl', function($scope,$location,$http,$interval,$timeout,$window){
+
+	$scope.audios = ['assets/audio/audio1.m4a','assets/audio/audio2.m4a'];
+	$scope.index = -1;
+	$scope.getNextAudio = function(){
+		// $scope.index+=1;
+		return $scope.audios[$scope.index]
+	}
+	$scope.increment = function(){
+		$scope.index += 1;
+		$scope.timer = 15;
+	}
+
 	$scope.twilioSetup = function(){
 		$http({
 			method: 'GET',
@@ -21,6 +33,9 @@ angular.module('interviewApp', [])
 		}).success(function(data){
 			Twilio.Device.setup(data);
 		})
+	}
+	$scope.show = function(i){
+		return (i == $scope.index && $scope.timer < 0)
 	}
 	$scope.getApplicantId = function(){
 		var params = $location.search();
@@ -34,6 +49,8 @@ angular.module('interviewApp', [])
 	$scope.getApplicantId();
 
 	$scope.startInterview = function(){
+		$scope.increment();
+		$scope.timer = -1;
 		Twilio.Device.connect({
 			applicant: $scope.applicant
 		});
@@ -50,6 +67,9 @@ angular.module('interviewApp', [])
 	}
 	$scope.endInterview = function(){
 		Twilio.Device.disconnectAll();
+		$timeout(function(){
+			$window.location.href = '/thankyou'
+		},1500);
 	}
 
 	//Twilio javascript
@@ -72,4 +92,9 @@ angular.module('interviewApp', [])
     Twilio.Device.disconnect(function (conn) {
         // console.log(conn);
     });
+
+    $interval(function(){
+		$scope.timer-=1;
+		console.log($scope.timer);
+	},1000)
 })
