@@ -23,9 +23,11 @@ angular.module('interviewApp', [])
 	}
 	$scope.increment = function(){
 		$scope.index += 1;
-		$scope.timer = 15;
+		$scope.timer = 10;
 	}
-
+	$scope.showQuestion = function(i){
+		return (i == $scope.index)
+	}
 	$scope.twilioSetup = function(){
 		$http({
 			method: 'GET',
