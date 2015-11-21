@@ -25,7 +25,7 @@ angular.module('interviewApp', [])
 		$scope.index += 1;
 		$scope.timer = 10;
 	}
-	$scope.showQuestion = function(i){
+	$scope.question = function(i){
 		return (i == $scope.index)
 	}
 	$scope.twilioSetup = function(){

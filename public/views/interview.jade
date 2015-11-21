@@ -33,9 +33,9 @@ body(ng-app='interviewApp' ng-controller='interviewCtrl' style='background:#3449
           p After the interview, we will get back to you within a few days to tell you how it went. Best of luck!
           button.btn.btn-lg.btn-success(ng-click='startInterview()' ng-show='index == -1') Start interview
       .col-md-6
+        h3 {{questions[index-1]}}
         button.btn.btn-lg.btn-danger(ng-click='endInterview()' ng-show='showEnd()') End interview
         .row(ng-repeat='audio in audios')
-          h3(ng-show='showQuestion($index)') {{questions[$index-1]}}
           h2(ng-show='show($index)') Question {{$index+1}}
           a.btn.btn-primary(onclick="this.firstChild.play()" ng-click='increment()' ng-show='show($index)')
             audio(ng-src="{{audio}}")
