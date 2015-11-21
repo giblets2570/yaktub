@@ -12,7 +12,11 @@ angular.module('interviewApp', [])
 .controller('interviewCtrl', function($scope,$location,$http,$interval,$timeout,$window){
 
 	$scope.audios = ['assets/audio/audio3.m4a','assets/audio/audio4.m4a','assets/audio/audio5.m4a','assets/audio/audio6.m4a','assets/audio/audio7.m4a'];
+	$scope.questions = ['Tell us a bit about yourself.','Tell us about your previous work and what you achieved.','Why do you think you\'d be a good persuader?','Qualify leads requires building relationships and creating trust. Why do you think you\'d be good at this, and perhaps give some examples from your own experiences.','Tell us about some of your interests and hobbies outside work.'];
 	$scope.index = -1;
+	$scope.showEnd = function(){
+		return ($scope.index == $scope.audios.length && $scope.timer < 0)
+	}
 	$scope.getNextAudio = function(){
 		// $scope.index+=1;
 		return $scope.audios[$scope.index]
