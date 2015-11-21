@@ -11,7 +11,7 @@ angular.module('interviewApp', [])
 
 .controller('interviewCtrl', function($scope,$location,$http,$interval,$timeout,$window){
 
-	$scope.audios = ['assets/audio/audio1.m4a','assets/audio/audio2.m4a'];
+	$scope.audios = ['assets/audio/audio3.m4a','assets/audio/audio4.m4a','assets/audio/audio5.m4a','assets/audio/audio6.m4a','assets/audio/audio7.m4a'];
 	$scope.index = -1;
 	$scope.getNextAudio = function(){
 		// $scope.index+=1;
