@@ -12,6 +12,14 @@
 var _ = require('lodash');
 var Client = require('./client.model');
 
+var twilio = require('twilio');
+var outgoingNumber = require('../../config/twilio').outgoingNumber;
+var twilioDetails = require('../../config/twilio');
+var twilio = require('twilio');
+var capability = new twilio.Capability(twilioDetails.accountID, twilioDetails.authToken);
+capability.allowClientOutgoing(twilioDetails.clientAppID);
+
+
 // Get list of clients
 exports.index = function(req, res) {
   Client.find(function(err,clients){
@@ -70,8 +78,11 @@ exports.destroy = function(req, res) {
  * App logic routes outside CRUD
  */
 
-// Deletes a client from the DB.
-
+// Get's a twilio token for an agent, and also returns the agents id
+exports.twilio = function(req, res){
+  var token = capability.generate();
+  return res.status(201).json(token);
+}
 
 /**
  * Error handling route

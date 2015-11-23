@@ -13,10 +13,10 @@ module.exports = function(passport) {
   // Define the strategy to be used by PassportJS
   passport.use('login', new LocalStrategy(
     function(username, password, done) {
-      console.log(username, password);
       Client.findOne({'name':username},function(err,client){
         if(err){return done(null, false, { message: 'Error in request.' })}
         if(!client){return done(null, false, { message: 'Incorrect username.' })}
+        console.log(username, password);
         if(!client.validPassword(password)){return done(null, false, { message: 'Incorrect password.' })}
         return done(null, client);
       })

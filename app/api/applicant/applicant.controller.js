@@ -17,11 +17,14 @@ var outgoingNumber = require('../../config/twilio').outgoingNumber;
 var twilioDetails = require('../../config/twilio');
 var twilio = require('twilio');
 var capability = new twilio.Capability(twilioDetails.accountID, twilioDetails.authToken);
-capability.allowClientOutgoing(twilioDetails.appID);
+capability.allowClientOutgoing(twilioDetails.applicantAppID);
 
 // Get list of calls
 exports.index = function(req, res) {
-  Applicant.find(function(err,applicants){
+  var query = {}
+  if(req.query.campaign)
+    query.campaign = req.session.campaign;
+  Applicant.find(query,function(err,applicants){
     if(err) { return handleError(res, err); }
     return res.status(200).json(applicants);
   })
@@ -40,6 +43,7 @@ exports.show = function(req, res) {
 exports.create = function(req, res) {
   var applicant = new Applicant();
   var updated = _.merge(applicant, req.body);
+  updated.campaign = req.session.campaign;
   updated.save(function (err) {
     if (err) { return handleError(res, err); }
     return res.status(200).json(applicant);

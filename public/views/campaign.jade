@@ -1,0 +1,70 @@
+doctype html(lang='en')
+head
+  meta(charset='utf-8')
+  meta(http-equiv='X-UA-Compatible', content='IE=edge')
+  meta(name='viewport', content='width=device-width, initial-scale=1')
+  // The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags
+  base(href='/')
+  meta(name='description', content='')
+  meta(name='author', content='')
+  link(rel='icon', href='favicon.ico')
+  title Samurai Sales Interview
+  // Bootstrap core CSS
+  link(href='bower_components/bootstrap/dist/css/bootstrap.css', rel='stylesheet')
+
+  link(href='bower_components/angular-motion/dist/angular-motion.min.css', rel='stylesheet')
+
+  // Custom styles for this template
+  link(href='css/style.css', rel='stylesheet')
+
+  // HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries
+  //if lt IE 9
+    script(src='https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js')
+    |
+    script(src='https://oss.maxcdn.com/respond/1.4.2/respond.min.js')
+body(ng-app='campaignApp' ng-controller='campaignCtrl' style='background:#34495e; color: white; font-family: sans-serif; font-size: 20px;')
+  .container
+    h1 Hi #{name}
+    h2 #{campaign_name}
+    .row
+      .col-md-3
+        a.btn.btn-primary(href='/dashboard') Back
+      .col-md-offset-6.col-md-3
+        button.btn.btn-primary(ng-click='viewApplicants()') View applicants
+    .row
+      h3 Interview url
+      | #{share_url}
+    .row
+      .col-md-2
+        h3 Description
+      .col-md-2
+        button.btn(ng-show='!edit_description' ng-click='editDescription()') Edit
+    .row
+      p(ng-show='!edit_description') {{campaign.description}}
+      textarea.form-control(ng-show='edit_description' ng-model='campaign.description')
+      button.btn.btn-success(ng-show='edit_description' ng-click='updateCampaign("edit")') Save
+    .row
+      h3 Questions
+      table.table
+        tr(ng-repeat='question in campaign.questions')
+          td {{$index+1}}
+          td {{question.transcription_text}}
+          td
+            audio(controls='')
+              source(ng-src='{{getTrustedUrl(question.recording_url)}}', type='audio/mpeg')
+              | Your browser does not support the audio element.
+      p(ng-show='loading') {{loading_message}}
+      button.btn.btn-primary(ng-click='makeNewQuestion()' ng-show='!making_question && !loading') Make new question
+      button.btn.btn-danger(ng-click='endQuestion()' ng-show='making_question') End question
+
+  // /container
+
+  script(src='bower_components/jquery/dist/jquery.min.js')
+  script(src='bower_components/bootstrap/dist/js/bootstrap.min.js')
+  script(src='bower_components/angular/angular.min.js')
+  script(src='bower_components/angular-sanitize/angular-sanitize.min.js')
+  script(src='bower_components/angular-animate/angular-animate.min.js')
+  script(src='bower_components/angular-strap/dist/angular-strap.min.js')
+  script(src='bower_components/angular-strap/dist/angular-strap.tpl.min.js')
+  script(src='//static.twilio.com/libs/twiliojs/1.2/twilio.min.js')
+  script(src='js/campaign.js')

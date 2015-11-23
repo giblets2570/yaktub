@@ -12,9 +12,11 @@ var campaignSchema = mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'Client'
     },
+    description: {type: String, default: ''},
 	questions:[{
-		recording: String,
-		transcription: String
+		recording_url: String,
+		transcription_url: String,
+        transcription_text: String,
 	}],
     created: {
         type: Date,

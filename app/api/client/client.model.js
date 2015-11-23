@@ -9,6 +9,7 @@ var clientSchema = mongoose.Schema({
 	name: {type: String, default: ''},
 	url_name: {type: String, default: ''},
 	email: {type: String, default: ''},
+	password: {type: String, default: ''},
 
 	created: {
     	type: Date,

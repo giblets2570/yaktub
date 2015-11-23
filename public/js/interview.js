@@ -9,10 +9,10 @@ angular.module('interviewApp', [])
   $locationProvider.html5Mode(true);
 })
 
-.controller('interviewCtrl', function($scope,$location,$http,$interval,$timeout,$window){
+.controller('interviewCtrl', function($scope,$location,$http,$interval,$timeout,$window,$sce){
 
-	$scope.audios = ['assets/audio/audio3.m4a','assets/audio/audio4.m4a','assets/audio/audio5.m4a','assets/audio/audio6.m4a','assets/audio/audio7.m4a'];
-	$scope.questions = ['Tell us a bit about yourself.','Tell us about your previous work and what you achieved.','Why do you think you\'d be a good persuader?','Qualify leads requires building relationships and creating trust. Why do you think you\'d be good at this, and perhaps give some examples from your own experiences.','Tell us about some of your interests and hobbies outside work.'];
+	$scope.audios = [];
+	$scope.questions = [];
 	$scope.index = -1;
 	$scope.showEnd = function(){
 		return ($scope.index == $scope.audios.length && $scope.timer < 0)
@@ -24,6 +24,9 @@ angular.module('interviewApp', [])
 	$scope.increment = function(){
 		$scope.index += 1;
 		$scope.timer = 10;
+	}
+	$scope.getTrustedUrl = function(url){
+		return $sce.trustAsResourceUrl(url);
 	}
 	$scope.question = function(i){
 		return (i == $scope.index)
@@ -40,6 +43,20 @@ angular.module('interviewApp', [])
 			Twilio.Device.setup(data);
 		})
 	}
+	$scope.getCampaign = function(){
+		$http({
+			method: 'GET',
+			url: '/api/campaigns/mine',
+			cache: false
+		}).success(function(data){
+			$scope.campaign = data;
+			for (var i = 0; i < $scope.campaign.questions.length; i++) {
+				$scope.audios.push($scope.campaign.questions[i].recording_url);
+				$scope.questions.push($scope.campaign.questions[i].transcription_text)
+			};
+		})
+	}
+	$scope.getCampaign();
 	$scope.show = function(i){
 		return (i == $scope.index && $scope.timer < 0)
 	}
@@ -48,7 +65,13 @@ angular.module('interviewApp', [])
 		console.log(params)
 		if (params.oid){
 			$scope.applicant = params.oid;
-			// $location.search('oid',null);
+		}else{
+			var pathArray = $window.location.pathname.split('/');
+			var path = pathArray[0];
+			for (var i = 1; i < 3; i++) {
+				path = path + '/'+ pathArray[i];
+			};
+			$window.location.href=path;
 		}
 		$scope.twilioSetup();
 	}
@@ -57,19 +80,19 @@ angular.module('interviewApp', [])
 	$scope.startInterview = function(){
 		$scope.increment();
 		$scope.timer = -1;
-		Twilio.Device.connect({
-			applicant: $scope.applicant
-		});
 		// $http({
-		// 	method: 'POST',
+		// 	method:'POST',
 		// 	url:'/api/applicants/start',
 		// 	data: {
 		// 		applicant: $scope.applicant
 		// 	},
-		// 	cache: false
+		// 	cache:false
 		// }).success(function(data){
 		// 	console.log(data);
 		// })
+		Twilio.Device.connect({
+			applicant: $scope.applicant
+		});
 	}
 	$scope.endInterview = function(){
 		Twilio.Device.disconnectAll();

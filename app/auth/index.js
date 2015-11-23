@@ -7,12 +7,12 @@ var router = express.Router();
 
 // route to log in
 router.get('/login', passport.authenticate('login'), function(req, res) {
-	return res.redirect('/'+req.user.url_name+'/dashboard')
+	return res.redirect('/dashboard')
 });
 
 // route to log in
 router.get('/signup', passport.authenticate('signup'), function(req, res) {
-	return res.redirect('/'+req.user.url_name+'/dashboard')
+	return res.redirect('/dashboard')
 });
 
 // route to log out
