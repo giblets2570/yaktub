@@ -8,6 +8,11 @@ var applicantSchema = mongoose.Schema({
 	name: {type: String, default: ''},
 	email: {type: String, default: ''},
 
+	campaign: {
+		type: mongoose.Schema.ObjectId,
+		ref: 'Campaign'
+	},
+
 	created: {
     	type: Date,
     	default: new Date()

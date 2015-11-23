@@ -7,7 +7,7 @@ head
   meta(name='description', content='')
   meta(name='author', content='')
   link(rel='icon', href='favicon.ico')
-  title Yak Hub
+  title Interviewy
   // Bootstrap core CSS
   link(href='bower_components/bootstrap/dist/css/bootstrap.css', rel='stylesheet')
 
@@ -21,6 +21,10 @@ head
     script(src='https://oss.maxcdn.com/respond/1.4.2/respond.min.js')
 body(style='background:#34495e; color: white; font-family: sans-serif; font-size: 20px;')
   div.container
-    h1 Hi there, please press the button below to start the interview process.
-    a.btn.btn-lg.btn-success(href='/setup') Go
+    h1 Hi there, please log in or sign up
+    .row
+      .col-md-6
+        a.btn.btn-lg.btn-success(href='/login') Login
+      .col-md-6
+        a.btn.btn-lg.btn-success(href='/signup') Signup
   // /container

@@ -23,7 +23,7 @@ function isAuthenticated(){
       if (!req.isAuthenticated()){
         // return res.status(401).send('Unauthorized');
         // return res.status(401).render(config.root + '/public/assets/errors/unauthorized');
-        return res.redirect('/admin');
+        return res.redirect('/login');
       }
       return next();
     })

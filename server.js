@@ -39,7 +39,7 @@ var socketio = require('socket.io')(server, {
 });
 
 // set the static files location /public/img will be /img for users
-app.use(express.static(__dirname + '/public')); 
+app.use(express.static(__dirname + '/public'));
 
 require('./app/config/socketio')(socketio);
 require('./app/config/express')(app);

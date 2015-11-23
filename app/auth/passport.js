@@ -4,7 +4,7 @@
 var LocalStrategy   = require('passport-local').Strategy;
 
 // load up the user models
-var Admin            = require('../api/admin/admin.model');
+var Client            = require('../api/client/client.model');
 
 // expose this function to our app using module.exports
 module.exports = function(passport) {
@@ -13,11 +13,29 @@ module.exports = function(passport) {
   // Define the strategy to be used by PassportJS
   passport.use('login', new LocalStrategy(
     function(username, password, done) {
-      Admin.findOne({'name':username},function(err,admin){
+      console.log(username, password);
+      Client.findOne({'name':username},function(err,client){
         if(err){return done(null, false, { message: 'Error in request.' })}
-        if(!admin){return done(null, false, { message: 'Incorrect username.' })}
-        if(!admin.validPassword(password)){return done(null, false, { message: 'Incorrect password.' })}
-        return done(null, admin);
+        if(!client){return done(null, false, { message: 'Incorrect username.' })}
+        if(!client.validPassword(password)){return done(null, false, { message: 'Incorrect password.' })}
+        return done(null, client);
+      })
+    }
+  ));
+
+  passport.use('signup', new LocalStrategy(
+    function(username, password, done) {
+      Client.findOne({'name':username},function(err,client){
+        if(err){return done(null, false, { message: 'Error in request.' })}
+        if(client){return done(null, false, { message: 'Username already taken!' })}
+        var client = new Client();
+        client.name = username;
+        client.url_name = client.urlSafeName(username);
+        client.password = client.generateHash(password);
+        client.save(function(err){
+          if(err){return done(null, false, { message: 'Error in request.' })}
+          return done(null, client);
+        })
       })
     }
   ));
@@ -28,8 +46,8 @@ module.exports = function(passport) {
   });
 
   passport.deserializeUser(function(id, done) {
-    Admin.findById(id, function(err, admin) {
-      if(admin){done(err, admin)}
+    Client.findById(id, function(err, client) {
+      if(client){done(err, client)}
     });
   });
 
