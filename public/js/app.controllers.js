@@ -10,13 +10,12 @@ angular.module('app.controllers', ['app.services'])
 		username: 'Tom Keohane Murray',
 		password: 'bogaboga'
 	};
-  // Register the login() function
-  $scope.login = function(){
-    Client.login($scope.user).then(function(data){
-    	$state.go('home.dashboard')
-    }, function (error) {
-    });
-  };
+  	$scope.login = function(){
+	    Client.login($scope.user).then(function(data){
+	    	$state.go('home.dashboard')
+	    }, function (error) {
+	    });
+	};
 }])
 
 .controller('homeCtrl', ['$scope','$state','Client',function($scope,$state,Client){
@@ -131,11 +130,13 @@ angular.module('app.controllers', ['app.services'])
 	$scope.job_name = $stateParams.job_name;
 	$scope.applicant_id = $stateParams.applicant_id;
 	$scope.answering_question = false;
+	$scope.questions_answered = 0;
 	var countdown;
 	$scope.getJob = function(){
 		Job.show({url_name: $scope.job_name}).then(function(data){
 			$scope.job = data;
 			$scope.timer = 60*data.timer;
+			$scope.number_questions = $scope.job.questions.length;
 		});
 	}
 	$scope.getJob();
@@ -151,16 +152,18 @@ angular.module('app.controllers', ['app.services'])
 		if($scope.answering_question) return;
 		$scope.answering_question = true;
 		question.answering = !question.answering;
-		Applicant.answer({
+		Twilio.Device.connect({
 			applicant: $scope.applicant_id,
 			question: question.text
-		}).then(function(data){
-			console.log(data);
 		});
 	}
 	$scope.endQuestion = function(question){
 		$scope.answering_question = false;
 		question.answered = true;
+		Twilio.Device.disconnectAll();
+		$scope.questions_answered += 1;
+		if($scope.questions_answered == $scope.number_questions)
+			$scope.endInterview();
 	}
 	$scope.endInterview = function(){
 		if (angular.isDefined(countdown)) {
@@ -176,28 +179,22 @@ angular.module('app.controllers', ['app.services'])
 		return minutes+":"+seconds;
 	}
 	$scope.twilioSetup = function(){
-		$http({
-			method: 'GET',
-			url:'/api/applicants/twilio',
-			params: {
-				applicant: $scope.applicant
-			},
-			cache: false
-		}).success(function(data){
+		Applicant.twilio($scope.applicant_id).then(function(data){
 			Twilio.Device.setup(data);
 		})
 	}
+	$scope.twilioSetup();
 	//Twilio javascript
     Twilio.Device.ready(function (device) {
         // console.log(device);
-        $scope.call_button_text = 'Call';
-        $scope.$apply();
+        // $scope.call_button_text = 'Call';
+        // $scope.$apply();
     });
 
     Twilio.Device.error(function (error) {
     	// console.log(error);
-    	$scope.call_button_text = 'Session expired, refresh page';
-        $scope.$apply();
+    	// $scope.call_button_text = 'Session expired, refresh page';
+     //    $scope.$apply();
     });
 
     Twilio.Device.connect(function (conn) {

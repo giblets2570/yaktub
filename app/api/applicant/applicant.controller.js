@@ -113,7 +113,7 @@ exports.answer = function(req, res) {
         var id = applicant.answers[k]._id;
         var actionURL = '/api/applicants/recording/' + applicant._id + '/' + id;
         var resp = new twilio.TwimlResponse();
-        // resp.say("Hi there, welcome to the Samurai Sales interview. A next button button will appear on your screen.")
+        resp.say("Record after the beep.")
         resp.record({
           action: actionURL,
           maxLength: 1200,
@@ -133,8 +133,9 @@ exports.twilioCallback = function(req, res) {
       resp.say('Error in the applicant');
       return res.send(resp.toString());
     }
-    applicant.recording_url = req.body.RecordingUrl;
-    applicant.duration = parseInt(req.body.RecordingDuration, 10);
+    var answer = applicant.answers.id(req.params.answer_id);
+    answer.recording_url = req.body.RecordingUrl;
+    answer.duration = parseInt(req.body.RecordingDuration, 10);
     applicant.save(function(err){
       if(err) { return handleError(res, err); }
       resp.say('Thanks for calling!');

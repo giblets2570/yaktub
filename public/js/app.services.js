@@ -68,6 +68,23 @@ angular.module('app.services', [])
 		      defered.reject('0');
 		    });
 		    return defered.promise;
+		},
+		twilio: function(applicant){
+			var defered = $q.defer();
+			$http({
+				method: 'GET',
+				url:'/api/applicants/twilio',
+				params: {
+					applicant: applicant
+				},
+				cache: false
+			}).success(function(data){
+				defered.resolve(data);
+			}).error(function(){
+		      // Error: authentication failed
+		      defered.reject('0');
+		    });
+		    return defered.promise;
 		}
 	}
 }])
