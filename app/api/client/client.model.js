@@ -14,12 +14,7 @@ var clientSchema = mongoose.Schema({
 	created: {
     	type: Date,
     	default: new Date()
-    },
-
-    campaigns:[{
-		type: mongoose.Schema.ObjectId,
-		ref: 'Campaign'
-	}]
+    }
 });
 
 

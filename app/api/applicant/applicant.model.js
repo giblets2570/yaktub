@@ -7,20 +7,24 @@ var applicantSchema = mongoose.Schema({
 
 	name: {type: String, default: ''},
 	email: {type: String, default: ''},
+	phone: {type: String, default: ''},
 
-	campaign: {
+	job: {
 		type: mongoose.Schema.ObjectId,
-		ref: 'Campaign'
+		ref: 'Job'
 	},
-
+	started: {type: Boolean, default: false},
 	created: {
     	type: Date,
     	default: new Date()
     },
 
-	// Data from twilio
-	recording_url: {type : String, default: ''},
-	duration: {type : Number, default: 0},
+	answers:[{
+		question: String,
+		// Data from twilio
+		recording_url: {type : String, default: ''},
+		duration: {type : Number, default: 0},
+	}],
 
 	// Client driven data from the applicant
 	followed_up: {type : Boolean, default: false},

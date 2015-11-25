@@ -1,0 +1,28 @@
+.row
+	.col-md-offset-2.col-md-8
+		h1 {{job.name}}
+
+.row
+	.col-md-offset-2.col-md-8
+		p(style='color:grey;') {{job.description}}
+		p(style='color:grey;') You will have {{job.timer}} minutes to complete the interview
+		p(style='color:grey;') Once you start the interview, you must complete it. You cannot refresh the page to restart.
+
+.row(ng-show='!interview_started')
+	.col-md-offset-2.col-md-4
+		button.btn.button(ng-click='startInterview()') START INTERVIEW
+.row(ng-show='interview_started')
+	.col-md-offset-2.col-md-4
+		h4 Timer
+		p(style='color:grey;'){{timeDisplay()}}
+
+hr
+div(ng-repeat='question in job.questions' ng-show='interview_started')
+	.row
+		.col-md-offset-2.col-md-8
+			h4 Question {{$index + 1}}
+			p {{question.text}}
+			button.btn.button(ng-show='!question.answered && !question.answering' ng-click='answerQuestion(question)') ANSWER
+			button.btn.button.end(ng-show='!question.answered && question.answering' ng-click='endQuestion(question)') END
+			button.btn.button.done(ng-show='question.answered') ANSWERED
+	hr

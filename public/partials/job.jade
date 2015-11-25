@@ -1,0 +1,52 @@
+.row
+	.col-md-8
+		a(ui-sref='home.dashboard') Back to profile
+.row
+	.col-md-offset-2.col-md-8
+		h2(ng-show='!editing_name') {{job.name}}
+		span.glyphicon.glyphicon-pencil(ng-click='editName()' ng-show='!editing_name')
+		textarea.form-control(rows='3' ng-model='job.name' ng-show='editing_name')
+		button.btn.btn-success(ng-click='saveName()' ng-show='editing_name') Save
+hr
+.row
+	.col-md-offset-2.col-md-8
+		h4 Description
+		p(style='color:grey') Give your interviewee's an idea of what the interview is for and what it entails.
+.row
+	.col-md-offset-2.col-md-8
+		p(ng-show='!editing_description') {{job.description}}
+		span.glyphicon.glyphicon-pencil(ng-click='editDescription()' ng-show='!editing_description')
+		textarea.form-control(rows='3' ng-model='job.description' ng-show='editing_description')
+		button.btn.btn-success(ng-click='saveDescription()' ng-show='editing_description') Save
+hr
+.row
+	.col-md-offset-2.col-md-8
+		h4 Timer length
+		p(style='color:grey') The interview will be this many minutes
+.row
+	.col-md-offset-2.col-md-2
+		p(ng-show='!editing_timer') {{job.timer}}
+		span.glyphicon.glyphicon-pencil(ng-click='editTimer()' ng-show='!editing_timer')
+		input.form-control(type='number' ng-model='job.timer' ng-show='editing_timer')
+		button.btn.btn-success(ng-click='saveTimer()' ng-show='editing_timer') Save
+hr
+.row
+	.col-md-offset-2.col-md-8
+		h4 Questions
+		p(style='color:grey') The questions you want asked in the interviews
+.row(ng-repeat='question in job.questions')
+	.col-md-offset-2.col-md-7
+		{{$index+1}}: {{question.text}}
+	.col-md-2
+		a(href='' ng-click='deleteQuestion($index)') Delete
+.row
+	.col-md-offset-2.col-md-8
+		button.btn.btn-primary(ng-click='addQuestion()' ng-show='!adding_question') Add question
+		textarea.form-control(rows='2' type='text' ng-show='adding_question' ng-model='new_question')
+		button.btn.btn-success(ng-click='saveQuestion()' ng-show='adding_question') Save
+hr
+.row
+	.col-md-offset-2.col-md-8
+		h4 Shareable url
+		p(style='color:grey') Share this url with people you want to take your interview
+		h5 /interview/{{job.url_name}}

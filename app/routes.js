@@ -17,7 +17,7 @@ module.exports = function(app) {
   // Insert routes below
   app.use('/api/applicants', require('./api/applicant'));
   app.use('/api/clients', require('./api/client'));
-  app.use('/api/campaigns', require('./api/campaign'));
+  app.use('/api/jobs', require('./api/job'));
   app.use('/auth', require('./auth'));
   app.use('', require('./public'));
 
@@ -28,6 +28,10 @@ module.exports = function(app) {
 
   // The index page of the page
   app.route('/')
+    .get(function(req, res) {
+      res.render(config.root + '/public/index');
+    });
+  app.route('*')
     .get(function(req, res) {
       res.render(config.root + '/public/index');
     });

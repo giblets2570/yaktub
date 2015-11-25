@@ -11,6 +11,7 @@
 
 var _ = require('lodash');
 var Applicant = require('./applicant.model');
+var Job = require('../job/job.model');
 
 var twilio = require('twilio');
 var outgoingNumber = require('../../config/twilio').outgoingNumber;
@@ -43,7 +44,6 @@ exports.show = function(req, res) {
 exports.create = function(req, res) {
   var applicant = new Applicant();
   var updated = _.merge(applicant, req.body);
-  updated.campaign = req.session.campaign;
   updated.save(function (err) {
     if (err) { return handleError(res, err); }
     return res.status(200).json(applicant);
@@ -93,21 +93,35 @@ exports.twilio = function(req, res){
 
 // Deletes a call from the DB.
 
-exports.start = function(req, res) {
+exports.answer = function(req, res) {
   Applicant.findById(req.body.applicant,function(err, applicant){
     if(err) { return handleError(res, err); }
     if(!applicant) { return res.status(401).send('0'); }
-    var actionURL = '/api/applicants/recording/' + applicant._id;
-    var resp = new twilio.TwimlResponse();
-    // resp.say("Hi there, welcome to the Samurai Sales interview. A next button button will appear on your screen.")
-    resp.record({
-      action: actionURL,
-      maxLength: 1200,
-      timeout: 40
-    },function(node){
-      node.say('Question one. How much experience do you have in sales?');
-    });
-    return res.send(resp.toString());
+    if(req.body.question){
+      applicant.answers.push({
+        question: req.body.question
+      })
+      applicant.save(function(err){
+        if(err) { return handleError(res, err); }
+        var k;
+        for (var i = applicant.answers.length - 1; i >= 0; i--) {
+          if(applicant.answers[i].text == req.body.text){
+            k = i;
+            break;
+          }
+        }
+        var id = applicant.answers[k]._id;
+        var actionURL = '/api/applicants/recording/' + applicant._id + '/' + id;
+        var resp = new twilio.TwimlResponse();
+        // resp.say("Hi there, welcome to the Samurai Sales interview. A next button button will appear on your screen.")
+        resp.record({
+          action: actionURL,
+          maxLength: 1200,
+          timeout: 40
+        });
+        return res.send(resp.toString());
+      })
+    }
   });
 };
 

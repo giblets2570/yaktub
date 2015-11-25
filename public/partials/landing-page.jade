@@ -1,0 +1,14 @@
+.container
+    .col-md-offset-2.col-md-8
+      center
+        img.icon(src='assets/images/noun.svg')
+        h1.yak-tub Yak Tub
+        h4.tagline - Bathe in applicants -
+    .col-md-2
+    .col-md-offset-2.col-md-8
+      center
+        form(ng-submit ='login()')
+            input.form-control.enter(placeholder='Name...' type='text' ng-model='user.username')
+            input.form-control.enter(placeholder='Password' type='password' ng-model='user.password')
+            button.btn.button(type='submit()') LOG IN
+    .col-md-2

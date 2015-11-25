@@ -18,7 +18,7 @@ var passport = require('passport');
 
 module.exports = function(app) {
   var env = app.get('env');
-  app.set('views', config.root + '/public/views');
+  app.set('views', config.root + '/public');
   app.set('view engine', 'jade');
   app.use(compression());
   app.use(bodyParser.urlencoded({ extended: false }));

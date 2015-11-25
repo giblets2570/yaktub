@@ -42,10 +42,12 @@ module.exports = function(passport) {
 
   // Serialized and deserialized methods when got from session
   passport.serializeUser(function(user, done) {
+    console.log('Here the other problem')
     done(null, user._id);
   });
 
   passport.deserializeUser(function(id, done) {
+    console.log('Here the problem')
     Client.findById(id, function(err, client) {
       if(client){done(err, client)}
     });

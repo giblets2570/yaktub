@@ -1,207 +1,84 @@
-.greyish {
-  background:#F1F1F1;
-}
-
-.white {
-  background:#FFFFFF;
-}
-
-.nav-text {
-	color: white;
-}
-
-.navbar .divider-vertical {
-	height: 50px;
-	margin: 0 9px;
-	border-right: 1px solid #ffffff;
-	border-left: 1px solid #f2f2f2;
-}
-
-.navbar-inverse .divider-vertical {
-	border-right-color: #222222;
-	border-left-color: #111111;
-}
-
-@media (max-width: 767px) {
-.navbar-collapse .nav > .divider-vertical {
-    display: none;
-  }
-}
-
-.navbar {
-    position: static;
-}
-
-.glyphicon {
-    font-size: 20px;
-}
-
-.ta-editor {
-    min-height: 300px;
-    height: auto;
-    overflow: auto;
-    font-family: inherit;
-    font-size: 100%;
-    margin:20px 0;
- }
-
 body{
-	font-family: Arial, 'Lucida Sans', Geneva, Verdana, sans-serif;
-}
-
-@media (min-width: 768px){
-  .seven-cols .col-md-1,
-  .seven-cols .col-sm-1,
-  .seven-cols .col-lg-1  {
-    width: 100%;
-    *width: 100%;
-  }
-}
-
-@media (min-width: 992px) {
-  .seven-cols .col-md-1,
-  .seven-cols .col-sm-1,
-  .seven-cols .col-lg-1 {
-    width: 14.285714285714285714285714285714%;
-    *width: 14.285714285714285714285714285714%;
-  }
-}
-
-.glyphicon-star {
-  margin-left: 10px;
-}
-
-.glyphicon-star-empty {
-  margin-left: 10px;
-}
-
-.glyphicon-filter {
-  margin-left: 15px;
-}
-
-.glyphicon-calendar {
-  margin-right: 15px;
-}
-
-.glyphicon-user {
-  font-size: 40px;
-}
-
-.agent-box {
-  border:0px;
-  border-bottom:1px;
-  border-style:solid;
-  border-color: #D1D1D1;
-  padding: 20px;
-}
-
-.analytics-row {
-  background:#FFFFFF;
-  margin-top:-20px;
-  padding:10px;
-}
-
-.glyphicon-triangle-bottom {
-  font-size: 10;
-  margin-left: 15px;
-}
-
-.analytics-outer-div {
-  padding: 20px;
-}
-
-.analytics-inner-div {
-  border: solid 1px;
-  border-radius:4px;
-  padding: 10px;
-  height: 150px;
-  background: white;
-}
-
-.analytics-canvas-box {
-  background:white;
-  padding: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.dashboard-lead {
-  border:1px solid;
-  border-radius:3px;
-  padding: 8px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-};
-
-.dashboard-lead-left {
-  border: 0px;
-  border-right: 1px;
-  border-style:solid;
-}
-
-.dashboard-question {
-  margin-bottom: 10px;
-};
-
-div.input-group.info-spacer {
-  margin-top: 5px;
-}
-
-label {
-  margin-right: 20px;
-}
-
-.scheduler-top-left {
-  border:0px;
-  border-right:1px;
-  border-color: #D1D1D1;
-  border-style: solid;
-}
-
-.scheduler-top-right {
-  border:0px;
-}
-
-.scheduler-left {
-  border:0px;
-  border-right:1px;
-  border-top:1px;
-  border-color: #D1D1D1;
-  border-style: solid;
-}
-
-.scheduler-right {
-  border:0px;
-  border-top:1px;
-  border-color: #D1D1D1;
-  border-style: solid;
-}
-.pager {
-  float: left;
-}
-div.box {
-  position: relative;
+  font-family: 'Open Sans', sans-serif;
   width: 100%;
-  height: 100%;
-  background: #fff;
-  color: #000;
 }
 
-div.box:hover {
-  cursor: hand;
-  cursor: pointer;
-  opacity: .9;
+.icon{
+  height: 200px;
 }
 
-a.divLink {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  text-decoration: none;
-  z-index: 10;
-  background-color: white;
-  opacity: 0;
-  filter: alpha(opacity=0);
+.yak-tub{
+  font-family: 'Vollkorn', serif;
+  font-weight: bold;
+  font-size: 4em;
+}
+
+.enter{
+  width: 250px;
+  margin: 10px;
+}
+
+.tagline{
+  font-family: 'Merriweather', serif;
+  color: grey;
+  margin-bottom: 40px;
+}
+
+.button{
+  height: 50px;
+  width: 150px;
+  padding-top: 8px;
+  color: white;
+  border-radius: 5000px;
+  background: #2ecc71;
+  font-size: 0.8em;
+  letter-spacing: 1.5px;
+}
+.button:hover{
+  color: #dddddd;
+}
+
+.button.end{
+  background: #bd3b3b;
+}
+
+.button.done{
+  background: #7596ac;
+}
+
+.button:active{
+  color: #000000;
+}
+
+.interview{
+  margin-top: -30px;
+}
+
+.right-line{
+  border-width: 0px;
+  border-right: 2px;
+  margin-right: -2px;
+  border-color: #dddddd;
+  border-style: solid;
+  height: 100vh;
+}
+
+.dashboard{
+  background: #f3f3f3;
+  margin-left:2px;
+  height: 100vh;
+  overflow: scroll;
+}
+
+.description-box{
+  width: 60%;
+}
+
+.description-paragraph {
+  color:grey;
+  text-align: left;
+}
+
+.strong{
+  font-weight: bold;
 }
