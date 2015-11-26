@@ -1,2 +1,46 @@
 .row
-    | What the fuck is that?
+	.col-md-12
+		a(ui-sref='home.dashboard') Back to profile
+.row
+	.col-md-offset-4.col-md-4
+		center
+		h1 Applicants
+	.col-md-4
+		label(for='show_followed') Show followed up:
+		input(type='checkbox' id='show_followed' ng-model='show_filtered')
+
+
+.row(ng-repeat='applicant in applicants | applicantsFilter : show_filtered')
+	.col-md-12
+		center
+			.applicant-card(class='{{isFollowed(applicant)}}')
+				.row
+					.col-md-6
+						h3 {{$index+1}}: {{applicant.name}}
+					.col-md-6
+						label(for='followed') Followed up: 
+						input(type='checkbox' id='followed' ng-model='applicant.followed_up' ng-change='followedUp(applicant)')
+				.row
+					.col-md-6
+						p {{applicant.email}}
+					.col-md-6
+						p {{applicant.phone}}
+				hr
+				h4 Questions
+				.row(ng-repeat='answer in applicant.answers' style='text-align:left;')
+					.col-md-8
+						p {{$index+1}}: {{answer.question}}
+					.col-md-4
+						audio-player(source='answer.recording_url')
+						//- audio(controls)
+						//- 	source(ng-src="{{getTrustedUrl(answer.recording_url)}}" type="audio/mpeg")
+						//- 	|Your browser does not support the audio element.
+				hr
+				h4 Notes
+				.row(style='text-align:left;')
+					.col-md-offset-1.col-md-10
+						p(ng-show='!applicant.editing_notes') {{applicant.notes}}
+						span.glyphicon.glyphicon-pencil(ng-click='editNotes(applicant)' ng-show='!applicant.editing_notes')
+						textarea.form-control(rows='3' ng-model='applicant.notes' ng-show='applicant.editing_notes')
+						button.btn.btn-success(ng-click='saveNotes(applicant)' ng-show='applicant.editing_notes') Save
+					.col-md-1

@@ -1,16 +1,17 @@
 .row
 	.col-md-offset-2.col-md-8
-		h1 {{user_name}}
+		h1 {{user.name}}
 
 .row(ng-show='jobs.length > 0')
 	.col-md-offset-2.col-md-8
 		h2 Jobs
 .row(ng-repeat='job in jobs')
 	.col-md-offset-2.col-md-4
-		a(ui-sref='home.job({job_name: job.url_name})')
+		a(ui-sref='home.job({job_name:job.url_name})')
 			h4 {{job.name}}
 	.col-md-4
-		h4 {{job.applicants.length}} applicants
+		a(ui-sref='home.applicants({job_name:job.url_name})' style='color:grey;')
+			h5 View applicants
 .row
 	.col-md-offset-2.col-md-4
 		button.btn.btn-primary(ng-click='newJob()' ng-show='!making_job') New Job
@@ -18,5 +19,5 @@
 	.col-md-offset-2.col-md-8
 		.form-group
 			label(for='new_job')
-			input.form-control(id='new_job' type='text' ng-model='new_job_name')
+			input.form-control(id='new_job' type='text' ng-model='new_job_name' placeholder='Your new job name...')
 			button.btn.btn-success(ng-click='saveJob()') Save

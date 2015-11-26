@@ -49,4 +49,5 @@ hr
 	.col-md-offset-2.col-md-8
 		h4 Shareable url
 		p(style='color:grey') Share this url with people you want to take your interview
-		h5 /interview/{{job.url_name}}
+		h5 {{shareableUrl}}
+		button.btn.btn-default(clipboard text="shareableUrl" on-copied="success()" on-error="fail(err)") Copy

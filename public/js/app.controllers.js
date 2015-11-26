@@ -3,15 +3,16 @@
 *
 * Description
 */
-angular.module('app.controllers', ['app.services'])
+angular.module('app.controllers', ['app.services','angular-clipboard'])
 
-.controller('loginCtrl', ['$scope','$state','Client',function($scope,$state,Client){
+.controller('loginCtrl', ['$scope','$rootScope','$state','Client',function($scope,$rootScope,$state,Client){
 	$scope.user = {
 		username: 'Tom Keohane Murray',
 		password: 'bogaboga'
 	};
   	$scope.login = function(){
 	    Client.login($scope.user).then(function(data){
+	    	$rootScope.client = data._id;
 	    	$state.go('home.dashboard')
 	    }, function (error) {
 	    });
@@ -47,11 +48,19 @@ angular.module('app.controllers', ['app.services'])
 	}
 }])
 
-.controller('campaignCtrl', ['$scope','$state','$stateParams','Job',function($scope,$state,$stateParams,Job){
+.controller('jobCtrl', ['$scope','$state','$stateParams','$location','Job',function($scope,$state,$stateParams,$location,Job){
+	$scope.getShareableUrl = function(){
+		var result = $location.protocol() + "://" + $location.host();
+		if($location.port())
+			result+=":"+$location.port();
+		result += '/interview/'+$scope.job.url_name;
+		$scope.shareableUrl = result;
+	}
 	$scope.getJob = function(){
 		var job_name = $stateParams.job_name;
 		Job.show({url_name: job_name}).then(function(data){
 			$scope.job = data;
+			$scope.getShareableUrl();
 		})
 	}
 	$scope.getJob();
@@ -78,6 +87,7 @@ angular.module('app.controllers', ['app.services'])
 	}
 	$scope.saveTimer = function(){
 		$scope.editing_timer = !$scope.editing_timer;
+		if($scope.job.timer < 1) $scope.job.timer = 1;
 		Job.update({timer: $scope.job.timer},$scope.job._id).then(function(data){
 		})
 	}
@@ -93,13 +103,51 @@ angular.module('app.controllers', ['app.services'])
 	}
 	$scope.deleteQuestion = function(index){
 		$scope.job.questions.splice(index,1);
-		Job.update({questions:$scope.job.questions},$scope.job._id).then(function(data){
+			Job.update({questions:$scope.job.questions},$scope.job._id).then(function(data){
 		})
 	}
+	$scope.success = function () {
+        console.log('Copied!');
+    };
+
+    $scope.fail = function (err) {
+        console.error('Error!', err);
+    };
 }])
 
-.controller('applicantCtrl', ['$scope', function($scope){
-
+.controller('applicantsCtrl', ['$scope','$state','$stateParams','Job','Applicant', function($scope,$state,$stateParams,Job,Applicant){
+	$scope.job_name = $stateParams.job_name;
+	$scope.show_filtered = true;
+	$scope.getJob = function(c){
+		Job.show({url_name: $scope.job_name}).then(function(data){
+			$scope.job = data;
+			(c || angular.noop)();
+		});
+	}
+	$scope.getApplicants = function(){
+		Applicant.get({job: $scope.job._id}).then(function(data){
+			$scope.applicants = data;
+			console.log(data);
+		})
+	}
+	$scope.getJob($scope.getApplicants);
+	$scope.editNotes = function(applicant){
+		applicant.editing_notes = !applicant.editing_notes;
+	}
+	$scope.saveNotes = function(applicant){
+		applicant.editing_notes = !applicant.editing_notes;
+		Applicant.update({notes: applicant.notes},applicant._id).then(function(data){
+			console.log(data);
+		});
+	}
+	$scope.followedUp = function(applicant){
+		Applicant.update({followed_up: applicant.followed_up},applicant._id).then(function(data){
+			console.log(data);
+		});
+	}
+	$scope.isFollowed = function(applicant){
+		return applicant.followed_up ? 'followed-up' : '';
+	}
 }])
 
 .controller('detailsCtrl', ['$scope','$state','$stateParams','Job','Applicant',function($scope,$state,$stateParams,Job,Applicant){
@@ -125,6 +173,18 @@ angular.module('app.controllers', ['app.services'])
 		})
 	}
 }])
+
+.filter('applicantsFilter', function(){
+	return function(applicants, show_filtered){
+		if(show_filtered) return applicants;
+		var result = [];
+		for (var i = 0; i < applicants.length; i++) {
+			if(!applicants[i].followed_up)
+				result.push(applicants[i])
+		};
+		return result;
+	}
+})
 
 .controller('takeCtrl', ['$scope','$state','$stateParams','$interval','Job','Applicant',function($scope,$state,$stateParams,$interval,Job,Applicant){
 	$scope.job_name = $stateParams.job_name;
@@ -170,6 +230,7 @@ angular.module('app.controllers', ['app.services'])
 			$interval.cancel(countdown);
 			countdown = undefined;
 		}
+		Twilio.Device.disconnectAll();
 		$state.go('interview.end',{job_name: $scope.job_name})
 	}
 	$scope.timeDisplay = function(){

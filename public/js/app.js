@@ -3,7 +3,7 @@
 // *
 // * Description
 // */
-angular.module('app', ['ui.router','app.controllers'])
+angular.module('app', ['ui.router','app.controllers','app.directives'])
 
 .config(function($stateProvider, $urlRouterProvider, $locationProvider,$httpProvider) {
     //================================================
@@ -21,7 +21,10 @@ angular.module('app', ['ui.router','app.controllers'])
         // Authenticated
         if (user !== '0'){
           /*$timeout(deferred.resolve, 0);*/
-          $rootScope.user_name = user.name;
+          $rootScope.user = {
+            name: user.name,
+            _id: user._id
+          }
           deferred.resolve();
         // Not Authenticated
         }else {
@@ -83,7 +86,7 @@ angular.module('app', ['ui.router','app.controllers'])
       .state('home.job', {
       	url: '/:job_name',
       	templateUrl: '/partials/job',
-        controller: 'campaignCtrl'
+        controller: 'jobCtrl'
       })
 
       .state('home.applicants', {

@@ -70,6 +70,20 @@ body{
   overflow: scroll;
 }
 
+.applicant-card{
+  background: white;
+  width: 80%;
+  border: 1px solid;
+  border-color: #dddddd;
+  border-radius: 1px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.followed-up{
+  background: #97D6A6;
+}
+
 .description-box{
   width: 60%;
 }
@@ -77,6 +91,10 @@ body{
 .description-paragraph {
   color:grey;
   text-align: left;
+}
+
+.details{
+  margin-top:200px;
 }
 
 .strong{

@@ -23,8 +23,8 @@ capability.allowClientOutgoing(twilioDetails.applicantAppID);
 // Get list of calls
 exports.index = function(req, res) {
   var query = {}
-  if(req.query.campaign)
-    query.campaign = req.session.campaign;
+  if(req.query.job)
+    query.job = req.query.job;
   Applicant.find(query,function(err,applicants){
     if(err) { return handleError(res, err); }
     return res.status(200).json(applicants);
@@ -57,6 +57,8 @@ exports.update = function(req, res) {
     if (err) { return handleError(res, err); }
     if(!applicant) { return res.status(404).send('Not Found'); }
     var updated = _.merge(applicant, req.body);
+    if(req.body.answers)
+      updated.answers = req.body.answers;
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
       return res.status(200).json(applicant);
@@ -100,7 +102,7 @@ exports.answer = function(req, res) {
     if(req.body.question){
       applicant.answers.push({
         question: req.body.question
-      })
+      });
       applicant.save(function(err){
         if(err) { return handleError(res, err); }
         var k;

@@ -10,7 +10,7 @@ var jobSchema = mongoose.Schema({
 	name: {type: String, default: ''},
     url_name: {type: String, default: ''},
     shareable_url: {type: String, default: ''},
-    number_applicants: Number,
+    number_applicants: {type: Number, default: 0},
     client: {
         type: mongoose.Schema.ObjectId,
         ref: 'Client'
@@ -20,7 +20,7 @@ var jobSchema = mongoose.Schema({
 		recording_url: String,
         text: String
 	}],
-    timer: Number,
+    timer: {type: Number, default: 5},
     created: {
         type: Date,
         default: new Date()

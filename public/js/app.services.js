@@ -39,6 +39,36 @@ angular.module('app.services', [])
 
 .factory('Applicant', ['$q','$http', function($q,$http){
 	return {
+		get: function(params){
+			var defered = $q.defer();
+			$http({
+				method: 'GET',
+				url:'/api/applicants',
+				params: params
+			}).success(function(data){
+		      // No error: authentication OK
+		      defered.resolve(data);
+		    }).error(function(){
+		      // Error: authentication failed
+		      defered.reject('0');
+		    });
+		    return defered.promise;
+		},
+		update: function(data,id){
+			var defered = $q.defer();
+			$http({
+				method: 'PUT',
+				url:'/api/applicants/'+id,
+				data: data
+			}).success(function(data){
+		      // No error: authentication OK
+		      defered.resolve(data);
+		    }).error(function(){
+		      // Error: authentication failed
+		      defered.reject('0');
+		    });
+		    return defered.promise;
+		},
 		create: function(data){
 			var defered = $q.defer();
 			$http({
