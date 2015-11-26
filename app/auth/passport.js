@@ -15,8 +15,14 @@ module.exports = function(passport) {
     function(username, password, done) {
       Client.findOne({'name':username},function(err,client){
         if(err){return done(null, false, { message: 'Error in request.' })}
-        if(!client){return done(null, false, { message: 'Incorrect username.' })}
-        console.log(username, password);
+        if(!client){
+          Client.findOne({'email':username},function(err,client){
+            if(err){return done(null, false, { message: 'Error in request.' })}
+            if(!client) return done(null, false, { message: 'Incorrect username.' })
+            if(!client.validPassword(password)){return done(null, false, { message: 'Incorrect password.' })}
+            return done(null, client);
+          })
+        }
         if(!client.validPassword(password)){return done(null, false, { message: 'Incorrect password.' })}
         return done(null, client);
       })
@@ -25,16 +31,23 @@ module.exports = function(passport) {
 
   passport.use('signup', new LocalStrategy(
     function(username, password, done) {
-      Client.findOne({'name':username},function(err,client){
+      console.log('HERE');
+      Client.findOne({'email':username.email},function(err,client){
         if(err){return done(null, false, { message: 'Error in request.' })}
-        if(client){return done(null, false, { message: 'Username already taken!' })}
-        var client = new Client();
-        client.name = username;
-        client.url_name = client.urlSafeName(username);
-        client.password = client.generateHash(password);
-        client.save(function(err){
+        if(client){return done(null, false, { message: 'Email already in use!' })}
+        Client.findOne({'name': username.name}, function(err, client){
           if(err){return done(null, false, { message: 'Error in request.' })}
-          return done(null, client);
+          if(client){return done(null, false, { message: 'Name already in use!' })}
+          var client = new Client();
+          client.name = username.name;
+          client.company_name = username.company_name;
+          client.email = username.email;
+          client.url_name = client.urlSafeName(username);
+          client.password = client.generateHash(password);
+          client.save(function(err){
+            if(err){return done(null, false, { message: 'Error in request.' })}
+            return done(null, client);
+          })
         })
       })
     }
@@ -42,12 +55,10 @@ module.exports = function(passport) {
 
   // Serialized and deserialized methods when got from session
   passport.serializeUser(function(user, done) {
-    console.log('Here the other problem')
     done(null, user._id);
   });
 
   passport.deserializeUser(function(id, done) {
-    console.log('Here the problem')
     Client.findById(id, function(err, client) {
       if(client){done(err, client)}
     });

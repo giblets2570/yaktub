@@ -3,6 +3,10 @@ body{
   width: 100%;
 }
 
+.change-enter{
+  text-align: right;
+}
+
 .icon{
   height: 200px;
 }
@@ -68,6 +72,7 @@ body{
   margin-left:2px;
   height: 100vh;
   overflow: scroll;
+  padding: 30px;
 }
 
 .applicant-card{

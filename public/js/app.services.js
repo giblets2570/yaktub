@@ -23,6 +23,22 @@ angular.module('app.services', [])
 		    });
 		    return defered.promise;
 		},
+		signup : function(user){
+			var defered = $q.defer();
+			$http.post('/auth/signup', {
+		      username: user.username,
+		      password: user.password,
+		    })
+		    .success(function(user){
+		      // No error: authentication OK
+		      defered.resolve(user);
+		    })
+		    .error(function(){
+		      // Error: authentication failed
+		      defered.reject('0');
+		    });
+		    return defered.promise;
+		},
 		logout : function(user){
 			var defered = $q.defer();
 			$http.get('/auth/logout')
@@ -50,6 +66,21 @@ angular.module('app.services', [])
 		      defered.resolve(data);
 		    }).error(function(){
 		      // Error: authentication failed
+		      defered.reject('0');
+		    });
+		    return defered.promise;
+		},
+		show: function(params,fields,id){
+			if(fields)
+				params.fields = fields;
+			var defered = $q.defer();
+			$http({
+				method: 'GET',
+				url:'/api/applicants/'+id,
+				params: params
+			}).success(function(data){
+		      defered.resolve(data);
+		    }).error(function(){
 		      defered.reject('0');
 		    });
 		    return defered.promise;
@@ -125,12 +156,14 @@ angular.module('app.services', [])
 			if(fields)
 				query.fields = fields;
 			var defered = $q.defer();
-			$http.get('/api/jobs',query)
-			.success(function(data){
+			$http({
+				method: 'GET',
+				url:'/api/jobs',
+				params: query
+			}).success(function(data){
 		      // No error: authentication OK
 		      defered.resolve(data);
-		    })
-		    .error(function(){
+		    }).error(function(){
 		      // Error: authentication failed
 		      defered.reject('0');
 		    });

@@ -3,7 +3,7 @@
 // *
 // * Description
 // */
-angular.module('app', ['ui.router','app.controllers','app.directives'])
+angular.module('app', ['ngAnimate','ui.router','app.controllers','app.directives'])
 
 .config(function($stateProvider, $urlRouterProvider, $locationProvider,$httpProvider) {
     //================================================
@@ -38,6 +38,35 @@ angular.module('app', ['ui.router','app.controllers','app.directives'])
       return deferred.promise;
     };
 
+    var isLoggedin = function($q, $timeout, $http, $state, $rootScope){
+      // Initialize a new promise
+      var deferred = $q.defer();
+      // Make an AJAX call to check if the user is logged in
+      $http({
+        method:'GET',
+        url:'/auth/loggedin',
+        cache: false
+      }).success(function(user){
+        // Authenticated
+        if (user !== '0'){
+          /*$timeout(deferred.resolve, 0);*/
+          $rootScope.user = {
+            name: user.name,
+            _id: user._id
+          }
+          deferred.reject();
+          $state.go('home.dashboard');
+        // Not Authenticated
+        }else {
+          $timeout(function(){
+            deferred.reject();
+          }, 0);
+          deferred.resolve();
+        }
+      });
+      return deferred.promise;
+    };
+
     //================================================
     //================================================
     // Add an interceptor for AJAX errors
@@ -64,7 +93,10 @@ angular.module('app', ['ui.router','app.controllers','app.directives'])
       .state('landing-page', {
         url: '/',
         templateUrl: 'partials/landing-page',
-        controller: 'loginCtrl'
+        controller: 'loginCtrl',
+        resolve: {
+          isLoggedIn: isLoggedin
+        }
       })
 
       .state('home', {

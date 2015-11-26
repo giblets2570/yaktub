@@ -33,7 +33,7 @@ exports.index = function(req, res) {
 
 // Get a single call
 exports.show = function(req, res) {
-  Applicant.findById(req.params.id, function (err, applicant) {
+  Applicant.findById(req.params.id, req.query.fields,function (err, applicant) {
     if(err) { return handleError(res, err); }
     if(!applicant) { return res.status(404).send('Not Found'); }
     return res.json(applicant);

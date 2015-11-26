@@ -7,6 +7,7 @@ var bcrypt = require('bcrypt-nodejs');
 var clientSchema = mongoose.Schema({
 
 	name: {type: String, default: ''},
+    company_name: {type: String, default: ''},
 	url_name: {type: String, default: ''},
 	email: {type: String, default: ''},
 	password: {type: String, default: ''},

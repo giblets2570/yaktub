@@ -6,13 +6,18 @@
 angular.module('app.controllers', ['app.services','angular-clipboard'])
 
 .controller('loginCtrl', ['$scope','$rootScope','$state','Client',function($scope,$rootScope,$state,Client){
-	$scope.user = {
-		username: 'Tom Keohane Murray',
-		password: 'bogaboga'
+	$scope.user_login = {};
+	$scope.user_signup = {
+		username: {}
 	};
   	$scope.login = function(){
-	    Client.login($scope.user).then(function(data){
-	    	$rootScope.client = data._id;
+	    Client.login($scope.user_login).then(function(data){
+	    	$state.go('home.dashboard')
+	    }, function (error) {
+	    });
+	};
+	$scope.signup = function(){
+	    Client.signup($scope.user_signup).then(function(data){
 	    	$state.go('home.dashboard')
 	    }, function (error) {
 	    });
@@ -28,7 +33,7 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
   };
 }])
 
-.controller('dashboardCtrl', ['$scope','Job', function($scope,Job){
+.controller('dashboardCtrl', ['$scope','$state','Job', function($scope,$state,Job){
 	$scope.getJobs = function(){
 		Job.get({mine:true},'name url_name').then(function(data){
 			$scope.jobs = data;
@@ -44,6 +49,7 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 			name: $scope.new_job_name
 		}).then(function(data){
 			$scope.jobs.push(data);
+			$state.go('home.job',{job_name: data.url_name})
 		})
 	}
 }])
@@ -189,6 +195,13 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 .controller('takeCtrl', ['$scope','$state','$stateParams','$interval','Job','Applicant',function($scope,$state,$stateParams,$interval,Job,Applicant){
 	$scope.job_name = $stateParams.job_name;
 	$scope.applicant_id = $stateParams.applicant_id;
+	$scope.checkIfStartedPreviously = function(){
+		Applicant.show({},'started',$scope.applicant_id).then(function(data){
+			if(data.started)
+				$state.go('error.description',{error_id: 2})
+		})
+	}
+	$scope.checkIfStartedPreviously();
 	$scope.answering_question = false;
 	$scope.questions_answered = 0;
 	var countdown;
@@ -201,12 +214,16 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 	}
 	$scope.getJob();
 	$scope.startInterview = function(){
-		$scope.interview_started = !$scope.interview_started;
-		countdown = $interval(function(){
-			$scope.timer--;
-			if($scope.timer <= 0)
-				$scope.endInterview()
-		},1000);
+		Applicant.update({
+			started: true
+		},$scope.applicant_id).then(function(data){
+			$scope.interview_started = !$scope.interview_started;
+			countdown = $interval(function(){
+				$scope.timer--;
+				if($scope.timer <= 0)
+					$scope.endInterview()
+			},1000);
+		})
 	}
 	$scope.answerQuestion = function(question){
 		if($scope.answering_question) return;
@@ -265,4 +282,12 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
     Twilio.Device.disconnect(function (conn) {
         // console.log(conn);
     });
+}])
+
+.controller('errorCtrl', ['$scope','$state','$stateParams',function($scope,$state,$stateParams){
+	$scope.error_id = $stateParams.error_id;
+	$scope.error_messages = {
+		1: 'This job does not exist!',
+		2: 'You have already started this interview on a previous date!'
+	}
 }]);

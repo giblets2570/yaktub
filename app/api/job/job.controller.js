@@ -30,10 +30,8 @@ exports.show = function(req, res) {
   if(req.params.id == 'mine')
     req.params.id = req.session.job;
   if(req.params.id == 'query'){
-    console.log(req.query.url_name);
     Job.findOne({url_name: req.query.url_name},function(err,job){
       if(err) { return handleError(res, err); }
-      console.log("Here", job);
       if(!job) { return res.status(404).send('Not Found'); }
       return res.json(job);
     })
@@ -67,10 +65,8 @@ exports.update = function(req, res) {
     var updated = _.merge(job, req.body);
     if(req.body.questions)
       updated.questions = req.body.questions;
-    console.log(req.body.name);
     if(req.body.name)
       updated.url_name = updated.urlSafeName(req.body.name);
-    console.log(updated.url_name);
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
       return res.status(200).json(job);
@@ -154,6 +150,5 @@ exports.twilioCallback = function(req, res) {
  */
 
 function handleError(res, err) {
-  console.log(err);
   return res.status(500).send(err);
 }
