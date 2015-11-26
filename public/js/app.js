@@ -121,6 +121,12 @@ angular.module('app', ['ngAnimate','ui.router','app.controllers','app.directives
         controller: 'jobCtrl'
       })
 
+      .state('home.settings', {
+        url: '/settings',
+        templateUrl: '/partials/settings',
+        controller: 'settingsCtrl'
+      })
+
       .state('home.applicants', {
       	url: '/:job_name/applicants',
       	templateUrl: '/partials/applicants',

@@ -105,3 +105,17 @@ body{
 .strong{
   font-weight: bold;
 }
+
+.floater-top-right{
+  /*width:50%;*/
+  position: fixed;
+  top: 10px;
+  right: 10px;
+}
+
+.floater-top-left{
+  /*width:50%;*/
+  position: fixed;
+  top: 10px;
+  left: 10px;
+}

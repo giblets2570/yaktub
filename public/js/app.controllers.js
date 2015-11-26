@@ -5,23 +5,43 @@
 */
 angular.module('app.controllers', ['app.services','angular-clipboard'])
 
-.controller('loginCtrl', ['$scope','$rootScope','$state','Client',function($scope,$rootScope,$state,Client){
+.controller('loginCtrl', ['$scope','$state','Client','Alert',function($scope,$state,Client,Alert){
 	$scope.user_login = {};
 	$scope.user_signup = {
 		username: {}
 	};
   	$scope.login = function(){
-	    Client.login($scope.user_login).then(function(data){
-	    	$state.go('home.dashboard')
-	    }, function (error) {
-	    });
+  		Alert.success("Loading...").then(function(loading){
+  			loading.show();
+  			Client.login($scope.user_login).then(function(data){
+  				loading.hide();
+		    	$state.go('home.dashboard')
+		    }, function (error) {
+		    	loading.hide();
+		    	Alert.warning('Login credentials wrong!').then(function(alert){
+		    		alert.show();
+		    	});
+		    	$scope.user_login = {};
+		    });
+  		})
 	};
 	$scope.signup = function(){
-	    Client.signup($scope.user_signup).then(function(data){
-	    	$state.go('home.dashboard')
-	    }, function (error) {
-	    });
-	};
+		Alert.success("Loading...").then(function(loading){
+			loading.show();
+		    Client.signup($scope.user_signup).then(function(data){
+		    	loading.hide();
+		    	$state.go('home.dashboard')
+		    }, function (error) {
+		    	loading.hide();
+		    	Alert.warning('Login credentials wrong!').then(function(alert){
+		    		alert.show();
+		    	});
+		    	$scope.user_signup = {
+					username: {}
+				};
+		    });
+		})
+	}
 }])
 
 .controller('homeCtrl', ['$scope','$state','Client',function($scope,$state,Client){
@@ -282,6 +302,10 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
     Twilio.Device.disconnect(function (conn) {
         // console.log(conn);
     });
+}])
+
+.controller('settingsCtrl', ['$scope', function($scope){
+	
 }])
 
 .controller('errorCtrl', ['$scope','$state','$stateParams',function($scope,$state,$stateParams){
