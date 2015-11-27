@@ -16,7 +16,7 @@ hr
 .row
 	.col-md-offset-2.col-md-8
 		p.editable(ng-click='editDescription()' ng-show='!editing_description') {{job.description}}
-		//- span.glyphicon.glyphicon-pencil(ng-click='editDescription()' ng-show='!editing_description')
+		span.glyphicon.glyphicon-pencil(ng-click='editDescription()' ng-show='!editing_description && (!job.description)')
 		textarea.form-control(rows='3' ng-model='job.description' ng-show='editing_description')
 		button.btn.btn-success(ng-click='saveDescription()' ng-show='editing_description') Save
 		button.btn.btn-warning(ng-click='editDescription()' ng-show='editing_description') Cancel
