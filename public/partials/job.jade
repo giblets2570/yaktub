@@ -3,10 +3,11 @@
 		a(ui-sref='home.dashboard') Back to profile
 .row
 	.col-md-offset-2.col-md-8
-		h2(ng-show='!editing_name') {{job.name}}
-		span.glyphicon.glyphicon-pencil(ng-click='editName()' ng-show='!editing_name')
+		h2.editable(ng-click='editName()' ng-show='!editing_name') {{job.name}}
+		//- span.glyphicon.glyphicon-pencil(ng-click='editName()' ng-show='!editing_name')
 		textarea.form-control(rows='3' ng-model='job.name' ng-show='editing_name')
 		button.btn.btn-success(ng-click='saveName()' ng-show='editing_name') Save
+		button.btn.btn-warning(ng-click='editName()' ng-show='editing_name') Cancel
 hr
 .row
 	.col-md-offset-2.col-md-8
@@ -14,10 +15,11 @@ hr
 		p(style='color:grey') Give your interviewee's an idea of what the interview is for and what it entails.
 .row
 	.col-md-offset-2.col-md-8
-		p(ng-show='!editing_description') {{job.description}}
-		span.glyphicon.glyphicon-pencil(ng-click='editDescription()' ng-show='!editing_description')
+		p.editable(ng-click='editDescription()' ng-show='!editing_description') {{job.description}}
+		//- span.glyphicon.glyphicon-pencil(ng-click='editDescription()' ng-show='!editing_description')
 		textarea.form-control(rows='3' ng-model='job.description' ng-show='editing_description')
 		button.btn.btn-success(ng-click='saveDescription()' ng-show='editing_description') Save
+		button.btn.btn-warning(ng-click='editDescription()' ng-show='editing_description') Cancel
 hr
 .row
 	.col-md-offset-2.col-md-8
@@ -25,8 +27,8 @@ hr
 		p(style='color:grey') The interview will be this many minutes
 .row
 	.col-md-offset-2.col-md-2
-		p(ng-show='!editing_timer') {{job.timer}}
-		span.glyphicon.glyphicon-pencil(ng-click='editTimer()' ng-show='!editing_timer')
+		p.editable(ng-show='!editing_timer' ng-click='editTimer()') {{job.timer}}
+		//- span.glyphicon.glyphicon-pencil(ng-click='editTimer()' ng-show='!editing_timer')
 		input.form-control(type='number' ng-model='job.timer' ng-show='editing_timer')
 		button.btn.btn-success(ng-click='saveTimer()' ng-show='editing_timer') Save
 hr
@@ -36,9 +38,11 @@ hr
 		p(style='color:grey') The questions you want asked in the interviews
 .row(ng-repeat='question in job.questions')
 	.col-md-offset-2.col-md-7
-		{{$index+1}}: {{question.text}}
+		p.editable(ng-click='editQuestion(question)' ng-show='!question.editing') {{$index+1}}: {{question.text}}
+		input.form-control(type='text' ng-model='question.text' ng-show='question.editing')
+		button.btn.btn-success(ng-click='saveQuestionEdit(question)' ng-show='question.editing') Save
 	.col-md-2
-		a(href='' ng-click='deleteQuestion($index)') Delete
+		a(href='' ng-click='deleteQuestion($index)' ng-show='!question.editing') Delete
 .row
 	.col-md-offset-2.col-md-8
 		button.btn.btn-primary(ng-click='addQuestion()' ng-show='!adding_question') Add question

@@ -91,6 +91,7 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 	}
 	$scope.getJob();
 	$scope.editDescription = function(){
+		$scope.editing_description ?  $scope.job.description = $scope.oldDescription : $scope.oldDescription = $scope.job.description.toString();
 		$scope.editing_description = !$scope.editing_description;
 	}
 	$scope.saveDescription = function(){
@@ -129,7 +130,15 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 	}
 	$scope.deleteQuestion = function(index){
 		$scope.job.questions.splice(index,1);
-			Job.update({questions:$scope.job.questions},$scope.job._id).then(function(data){
+		Job.update({questions:$scope.job.questions},$scope.job._id).then(function(data){
+		})
+	}
+	$scope.editQuestion = function(question){
+		question.editing = !question.editing;
+	}
+	$scope.saveQuestionEdit = function(question){
+		question.editing = !question.editing;
+		Job.update({questions:$scope.job.questions},$scope.job._id).then(function(data){
 		})
 	}
 	$scope.success = function () {

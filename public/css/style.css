@@ -75,6 +75,10 @@ body{
   padding: 30px;
 }
 
+.editable:hover{
+  cursor: pointer;
+}
+
 .applicant-card{
   background: white;
   width: 80%;
