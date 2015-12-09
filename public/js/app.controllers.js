@@ -366,6 +366,15 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 			console.log("Saved new email!")
 		})
 	}
+	$scope.editPassword = function(){
+		$scope.editing_password = !$scope.editing_password;
+	}
+	$scope.savePassword = function(){
+		$scope.editing_password = !$scope.editing_password;
+		Client.update({old_password: $scope.old_password,new_password: $scope.new_password},$scope.user._id).then(function(data){
+			console.log("Saved new password!")
+		})
+	}
 }])
 
 .controller('errorCtrl', ['$scope','$state','$stateParams',function($scope,$state,$stateParams){

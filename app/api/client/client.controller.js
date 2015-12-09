@@ -54,6 +54,11 @@ exports.update = function(req, res) {
     if (err) { return handleError(res, err); }
     if(!client) { return res.status(404).send('Not Found'); }
     var updated = _.merge(client, req.body);
+    if(req.body.new_password && req.body.old_password){
+      if(updated.validPassword(req.body.old_password)){
+        updated.password = updated.generateHash(req.body.new_password);
+      }
+    }
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
       return res.status(200).json(client);

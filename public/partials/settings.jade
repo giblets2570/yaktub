@@ -31,3 +31,13 @@
 		input.form-control(type='text' ng-model='user.email' ng-show='editing_email')
 		button.btn.btn-success(ng-click='saveEmail()' ng-show='editing_email') Save
 		button.btn.btn-warning(ng-click='editEmail()' ng-show='editing_email') Cancel
+
+.row
+	.col-md-offset-2.col-md-8
+		button.btn.btn-primary(ng-click='editPassword()' ng-show='!editing_password') Update password
+		label(for='old_password' ng-show='editing_password') Old password:
+		input.form-control(type='password' name='old_password' ng-model='old_password' ng-show='editing_password')
+		label(for='new_password' ng-show='editing_password') New password:
+		input.form-control(type='password' name='new_password' ng-model='new_password' ng-show='editing_password')
+		button.btn.btn-success(ng-click='savePassword()' ng-show='editing_password') Save
+		button.btn.btn-warning(ng-click='editPassword()' ng-show='editing_password') Cancel
