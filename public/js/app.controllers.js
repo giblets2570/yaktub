@@ -86,8 +86,14 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 		var job_name = $stateParams.job_name;
 		Job.show({url_name: job_name}).then(function(data){
 			$scope.job = data;
+			$scope.job.send_email ? $scope.job.send_email_s = 'true' : $scope.job.send_email_s = 'false';
+			console.log(data);
 			$scope.getShareableUrl();
 		})
+	}
+	$scope.changeSendEmail = function(){
+		$scope.job.send_email_s == 'true' ? $scope.job.send_email = true : $scope.job.send_email = false;
+		Job.update({send_email: $scope.job.send_email},$scope.job._id);
 	}
 	$scope.getJob();
 	$scope.editDescription = function(){
@@ -96,8 +102,7 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 	}
 	$scope.saveDescription = function(){
 		$scope.editing_description = !$scope.editing_description;
-		Job.update({description: $scope.job.description},$scope.job._id).then(function(data){
-		})
+		Job.update({description: $scope.job.description},$scope.job._id);
 	}
 	$scope.editName = function(){
 		$scope.editing_name = !$scope.editing_name;
@@ -115,8 +120,14 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 	$scope.saveTimer = function(){
 		$scope.editing_timer = !$scope.editing_timer;
 		if($scope.job.timer < 1) $scope.job.timer = 1;
-		Job.update({timer: $scope.job.timer},$scope.job._id).then(function(data){
-		})
+		Job.update({timer: $scope.job.timer},$scope.job._id);
+	}
+	$scope.editEmail = function(){
+		$scope.editing_email = !$scope.editing_email;
+	}
+	$scope.saveEmail = function(){
+		$scope.editing_email = !$scope.editing_email;
+		Job.update({email: $scope.job.email},$scope.job._id);
 	}
 	$scope.addQuestion = function(){
 		$scope.adding_question = !$scope.adding_question;
@@ -125,21 +136,18 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 		$scope.adding_question = !$scope.adding_question;
 		$scope.job.questions.push({text: $scope.new_question});
 		$scope.new_question = '';
-		Job.update({questions:$scope.job.questions},$scope.job._id).then(function(data){
-		})
+		Job.update({questions:$scope.job.questions},$scope.job._id);
 	}
 	$scope.deleteQuestion = function(index){
 		$scope.job.questions.splice(index,1);
-		Job.update({questions:$scope.job.questions},$scope.job._id).then(function(data){
-		})
+		Job.update({questions:$scope.job.questions},$scope.job._id);
 	}
 	$scope.editQuestion = function(question){
 		question.editing = !question.editing;
 	}
 	$scope.saveQuestionEdit = function(question){
 		question.editing = !question.editing;
-		Job.update({questions:$scope.job.questions},$scope.job._id).then(function(data){
-		})
+		Job.update({questions:$scope.job.questions},$scope.job._id);
 	}
 	$scope.success = function () {
         console.log('Copied!');
@@ -152,6 +160,7 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 
 .controller('applicantsCtrl', ['$scope','$state','$stateParams','Job','Applicant', function($scope,$state,$stateParams,Job,Applicant){
 	$scope.job_name = $stateParams.job_name;
+	$scope.applicant_id = $stateParams.applicant_id;
 	$scope.show_filtered = true;
 	$scope.getJob = function(c){
 		Job.show({url_name: $scope.job_name}).then(function(data){
@@ -160,10 +169,17 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 		});
 	}
 	$scope.getApplicants = function(){
-		Applicant.get({job: $scope.job._id}).then(function(data){
-			$scope.applicants = data;
-			console.log(data);
-		})
+		if($scope.applicant_id){
+			Applicant.show({},'',$scope.applicant_id).then(function(data){
+				$scope.applicants = [data];
+				console.log(data);
+			})
+		}else{
+			Applicant.get({job: $scope.job._id}).then(function(data){
+				$scope.applicants = data;
+				console.log(data);
+			})
+		}
 	}
 	$scope.getJob($scope.getApplicants);
 	$scope.editNotes = function(applicant){
@@ -277,7 +293,9 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 			countdown = undefined;
 		}
 		Twilio.Device.disconnectAll();
-		$state.go('interview.end',{job_name: $scope.job_name})
+		Job.finish($scope.job._id, $scope.applicant_id).then(function(data){
+			$state.go('interview.end',{job_name: $scope.job_name});
+		})
 	}
 	$scope.timeDisplay = function(){
 		var minutes = parseInt($scope.timer/60).toString();

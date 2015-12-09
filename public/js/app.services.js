@@ -212,6 +212,23 @@ angular.module('app.services', ['mgcrea.ngStrap'])
 		      defered.reject('0');
 		    });
 		    return defered.promise;
+		},
+		finish: function(id,applicant_id){
+			var defered = $q.defer();
+			$http({
+				method: 'GET',
+				url: '/api/jobs/'+id+'/finish/'+applicant_id,
+				cache: false
+			})
+		    .success(function(data){
+		      // No error: authentication OK
+		      defered.resolve(data);
+		    })
+		    .error(function(){
+		      // Error: authentication failed
+		      defered.reject('0');
+		    });
+		    return defered.promise;
 		}
 	}
 }])

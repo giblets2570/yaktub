@@ -11,6 +11,8 @@ var jobSchema = mongoose.Schema({
     url_name: {type: String, default: ''},
     shareable_url: {type: String, default: ''},
     number_applicants: {type: Number, default: 0},
+    send_email: {type: Boolean, default: true},
+    email: {type: String, default: ''},
     client: {
         type: mongoose.Schema.ObjectId,
         ref: 'Client'

@@ -11,7 +11,6 @@ var clientSchema = mongoose.Schema({
 	url_name: {type: String, default: ''},
 	email: {type: String, default: ''},
 	password: {type: String, default: ''},
-
 	created: {
     	type: Date,
     	default: new Date()

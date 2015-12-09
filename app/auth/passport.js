@@ -22,16 +22,16 @@ module.exports = function(passport) {
             if(!client.validPassword(password)){return done(null, false, { message: 'Incorrect password.' })}
             return done(null, client);
           })
+        }else{
+          if(!client.validPassword(password)){return done(null, false, { message: 'Incorrect password.' })}
+          return done(null, client);
         }
-        if(!client.validPassword(password)){return done(null, false, { message: 'Incorrect password.' })}
-        return done(null, client);
       })
     }
   ));
 
   passport.use('signup', new LocalStrategy(
     function(username, password, done) {
-      console.log('HERE');
       Client.findOne({'email':username.email},function(err,client){
         if(err){return done(null, false, { message: 'Error in request.' })}
         if(client){return done(null, false, { message: 'Email already in use!' })}

@@ -28,7 +28,6 @@ hr
 .row
 	.col-md-offset-2.col-md-2
 		p.editable(ng-show='!editing_timer' ng-click='editTimer()') {{job.timer}}
-		//- span.glyphicon.glyphicon-pencil(ng-click='editTimer()' ng-show='!editing_timer')
 		input.form-control(type='number' ng-model='job.timer' ng-show='editing_timer')
 		button.btn.btn-success(ng-click='saveTimer()' ng-show='editing_timer') Save
 hr
@@ -48,6 +47,25 @@ hr
 		button.btn.btn-primary(ng-click='addQuestion()' ng-show='!adding_question') Add question
 		textarea.form-control(rows='2' type='text' ng-show='adding_question' ng-model='new_question')
 		button.btn.btn-success(ng-click='saveQuestion()' ng-show='adding_question') Save
+hr
+.row
+	.col-md-offset-2.col-md-8
+		h4 Email notifications
+		p(style='color:grey') Do you want to be notified when an applicant does you interview?
+.row
+	.col-md-offset-2.col-md-7
+		input(type='radio' ng-model='job.send_email_s' value='true' ng-change='changeSendEmail()')
+		strong Yes
+		input(type='radio' ng-model='job.send_email_s' value='false' ng-change='changeSendEmail()')
+		strong No
+br
+.row
+	.col-md-offset-2.col-md-7
+		label(for='email') Email:
+		p.editable(name='email' ng-click='editEmail()' ng-show='!editing_email') {{job.email}}
+		span.glyphicon.glyphicon-pencil(ng-click='editEmail()' ng-show='!editing_email && (!job.email)')
+		input.form-control(type='text' ng-model='job.email' ng-show='editing_email')
+		button.btn.btn-success(ng-click='saveEmail()' ng-show='editing_email') Save
 hr
 .row
 	.col-md-offset-2.col-md-8

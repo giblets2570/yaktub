@@ -6,6 +6,7 @@ var auth = require('../../auth/auth.service');
 
 var router = express.Router();
 
+router.get('/:id/finish/:applicant_id', controller.finish)
 router.post('/make', controller.make);
 router.post('/recording/:job_id', controller.twilioCallback);
 

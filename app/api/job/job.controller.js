@@ -11,14 +11,25 @@
 
 var _ = require('lodash');
 var Job = require('./job.model');
+var Applicant = require('../applicant/applicant.model');
 
 var twilio = require('twilio');
+var nodemailer = require('nodemailer');
+
+// create reusable transporter object using SMTP transport
+var transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'tomkeohanemurray@gmail.com',
+        pass: 'bogaboga'
+    }
+});
 
 // Get list of jobs
 exports.index = function(req, res) {
   var query = {};
   if(req.query.mine)
-    query.client = req.user._id
+    query.client = req.user._id;
   Job.find(query,req.query.fields,function(err,jobs){
     if(err) { return handleError(res, err); }
     return res.status(200).json(jobs);
@@ -50,6 +61,7 @@ exports.create = function(req, res) {
   job.name = req.body.name;
   job.url_name = job.urlSafeName(req.body.name);
   job.client = req.user._id;
+  job.email = req.user.email;
   job.save(function(err){
     if (err) { return handleError(res, err); }
     return res.status(200).json(job);
@@ -143,6 +155,30 @@ exports.twilioCallback = function(req, res) {
   });
 };
 
+exports.finish = function(req, res){
+  Job.findById(req.params.id, function(err,job){
+    console.log("here");
+    console.log(job);
+    if(err) { return handleError(res, err); }
+    if(!job || !job.send_email) return res.status(200).send('Notification not sent');
+      // send mail with defined transport object
+      var host = req.protocol + '://' + req.get('Host');
+      var html = '<h1>New applicant for your job '+job.name+'</h1><br/><br/><p> View the new applicant <a href="'+host+'/home/'+job.url_name+'/applicants/'+req.params.applicant_id+'" target="_blank">here</a>.';
+      transporter.sendMail({
+        from: 'Yak tub <tomkeohanemurray@gmail.com>', // sender address
+        to: job.email, // list of receivers
+        subject: 'New applicant!', // Subject line
+        html: html // html body
+      }, function(error, info){
+        if(error){
+          console.log(error)
+          return res.status(200).json(error);
+        }
+        console.log('Message sent: ' + info.response);
+        return res.status(200).send('Message sent: ' + info.response);
+      });
+  })
+}
 
 
 /**

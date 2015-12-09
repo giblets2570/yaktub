@@ -133,6 +133,12 @@ angular.module('app', ['ngAnimate','ui.router','app.controllers','app.directives
         controller: 'applicantsCtrl'
       })
 
+      .state('home.applicant', {
+        url: '/:job_name/applicants/:applicant_id',
+        templateUrl: '/partials/applicants',
+        controller: 'applicantsCtrl'
+      })
+
       .state('interview', {
         url: '/interview',
         abstract: true,
