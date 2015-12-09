@@ -1,3 +1,33 @@
 .row
+	.col-md-8
+		a(ui-sref='home.dashboard') Back to profile
+.row
 	.col-md-offset-2.col-md-8
-		h2 Settings
+		h2 Update user info
+
+.row
+	.col-md-offset-2.col-md-8
+		label(for='name') Name:
+		p.editable(ng-click='editName()' name='name' ng-show='!editing_name') {{user.name}}
+		span.glyphicon.glyphicon-pencil(ng-click='editName()' ng-show='!editing_name && (!user.name)')
+		input.form-control(type='text' ng-model='user.name' ng-show='editing_name')
+		button.btn.btn-success(ng-click='saveName()' ng-show='editing_name') Save
+		button.btn.btn-warning(ng-click='editName()' ng-show='editing_name') Cancel
+
+.row
+	.col-md-offset-2.col-md-8
+		label(for='company') Company:
+		p.editable(ng-click='editCompany()' name='company' ng-show='!editing_company') {{user.company_name}}
+		span.glyphicon.glyphicon-pencil(ng-click='editCompany()' ng-show='!editing_company && (!user.company_name)')
+		input.form-control(type='text' ng-model='user.company_name' ng-show='editing_company')
+		button.btn.btn-success(ng-click='saveCompany()' ng-show='editing_company') Save
+		button.btn.btn-warning(ng-click='editCompany()' ng-show='editing_company') Cancel
+
+.row
+	.col-md-offset-2.col-md-8
+		label(for='email') Email:
+		p.editable(ng-click='editEmail()' name='email' ng-show='!editing_email') {{user.email}}
+		span.glyphicon.glyphicon-pencil(ng-click='editEmail()' ng-show='!editing_email && (!user.email)')
+		input.form-control(type='text' ng-model='user.email' ng-show='editing_email')
+		button.btn.btn-success(ng-click='saveEmail()' ng-show='editing_email') Save
+		button.btn.btn-warning(ng-click='editEmail()' ng-show='editing_email') Cancel
