@@ -11,7 +11,10 @@ var express = require('express');
 var mongoose = require('mongoose');
 var config = require('./app/config/environment');
 var passport = require('passport');
+var redis   = require('redis');
 var session = require('express-session');
+var redisStore = require('connect-redis')(session);
+var client  = redis.createClient();
 var _ = require('lodash')
 
 if(process.env.NODE_ENV === 'development'){
@@ -46,6 +49,7 @@ require('./app/config/express')(app);
 require('./app/auth/passport')(passport);
 app.use(
   session({
+    store: new redisStore({url: process.env.REDIS_URL}),
     secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true
