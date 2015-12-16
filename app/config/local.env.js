@@ -15,5 +15,5 @@ module.exports = {
   TWILIO_APPLICANT_APP_ID: 'AP9ff097987bfa0068f1c53a33bb677f87',
   TWILIO_NUMBER: '+441143031601',
   TWILIO_CLIENT_APP_ID: 'AP9ff097987bfa0068f1c53a33bb677f87',
-  REDIS_URL: 'redis://localhost:6379'
+  REDISCLOUD_URL: 'redis://localhost:6379'
 };
