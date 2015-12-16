@@ -12,10 +12,8 @@ var mongoose = require('mongoose');
 var config = require('./app/config/environment');
 var passport = require('passport');
 var url = require('url');
-var redis   = require('redis');
 var session = require('express-session');
 var redisStore = require('connect-redis')(session);
-var client  = redis.createClient();
 var _ = require('lodash')
 
 if(process.env.NODE_ENV === 'development'){
@@ -48,9 +46,18 @@ app.use(express.static(__dirname + '/public'));
 require('./app/config/socketio')(socketio);
 require('./app/config/express')(app);
 require('./app/auth/passport')(passport);
+var redisURL = url.parse(process.env.REDISCLOUD_URL);
+var pass;
+if(redisURL.auth){pass=redisURL.auth.split(/:/)[1]}
+console.log(process.env.REDISCLOUD_URL);
+console.log(redisURL);
 app.use(
   session({
-    store: new redisStore({url: process.env.REDISCLOUD_URL}),
+    store: new redisStore({
+      host: redisURL.hostname,
+      port: redisURL.port,
+      pass: pass
+    }),
     secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true
