@@ -49,12 +49,14 @@ require('./app/config/socketio')(socketio);
 require('./app/config/express')(app);
 require('./app/auth/passport')(passport);
 var redisURL = url.parse(process.env.REDISCLOUD_URL);
+var pass;
+if(redisURL.auth){pass=redisURL.auth.split(/:/)[1]}
 app.use(
   session({
     store: new redisStore({
       host: redisURL.hostname,
       port: redisURL.port,
-      pass: redisURL.auth.split(/:/)[1]
+      pass: pass
     }),
     secret: process.env.SESSION_SECRET,
     resave: true,
