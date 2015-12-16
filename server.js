@@ -51,6 +51,8 @@ require('./app/auth/passport')(passport);
 var redisURL = url.parse(process.env.REDISCLOUD_URL);
 var pass;
 if(redisURL.auth){pass=redisURL.auth.split(/:/)[1]}
+console.log(process.env.REDISCLOUD_URL);
+console.log(redisURL);
 app.use(
   session({
     store: new redisStore({
