@@ -10,7 +10,8 @@ var config = require('./config/environment');
 module.exports = function(app) {
 
   app.use(function(req,res,next){
-    // console.log(req.session);
+    console.log(req.session);
+    console.log("?");
     next();
   });
 
@@ -22,9 +23,12 @@ module.exports = function(app) {
   app.use('', require('./public'));
 
   // All undefined asset or api routes should return a 404
-  app.route('/:url(api|auth|components|app|bower_components|assets)/*')
-   .get(errors[404]);
+  // All undefined asset or api routes should return a 404
 
+  app.route('/signup')
+    .get(function(req, res) {
+      res.render(config.root + '/public/signup');
+    });
 
   // The index page of the page
   app.route('/')
@@ -35,7 +39,6 @@ module.exports = function(app) {
     .get(function(req, res) {
       res.render(config.root + '/public/index');
     });
-
   // All other routes should redirect to the index.html
   // app.route('/*')
   //   .get(function(req, res) {

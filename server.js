@@ -27,44 +27,25 @@ mongoose.connection.on('error', function(err) {
 	}
 );
 // Seed the database
-// if(config.seedDB) {
-// 	console.log("Seeding database");
-// 	require('./app/config/seed');
-// }
+if(config.seedDB) {
+	console.log("Seeding database");
+	require('./app/config/seed');
+}
 
 // Setup server
 var app = express();
 var server = require('http').createServer(app);
-var socketio = require('socket.io')(server, {
-  serveClient: config.env !== 'production',
-  path: '/socket.io-client'
-});
+// var socketio = require('socket.io')(server, {
+//   serveClient: config.env !== 'production',
+//   path: '/socket.io-client'
+// });
+var socketio = require('socket.io')(server);
 
 // set the static files location /public/img will be /img for users
-app.use(express.static(__dirname + '/public'));
-
+app.use(express.static(__dirname + '/public')); 
 require('./app/config/socketio')(socketio);
 require('./app/config/express')(app);
 require('./app/auth/passport')(passport);
-var redisURL = url.parse(process.env.REDISCLOUD_URL);
-var pass;
-if(redisURL.auth){pass=redisURL.auth.split(/:/)[1]}
-console.log(process.env.REDISCLOUD_URL);
-console.log(redisURL);
-app.use(
-  session({
-    store: new redisStore({
-      host: redisURL.hostname,
-      port: redisURL.port,
-      pass: pass
-    }),
-    secret: process.env.SESSION_SECRET,
-    resave: true,
-    saveUninitialized: true
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
 
 require('./app/routes')(app);
 
