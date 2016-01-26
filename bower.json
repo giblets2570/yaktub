@@ -25,6 +25,7 @@
     "angular-animate": "~1.4.7",
     "font-awesome": "~4.4.0",
     "angular-ui-router": "ui-router#~0.2.15",
-    "angular-clipboard": "~1.1.2"
+    "angular-clipboard": "~1.1.2",
+    "keen-js": "~3.3.0"
   }
 }

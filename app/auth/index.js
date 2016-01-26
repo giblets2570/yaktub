@@ -1,14 +1,34 @@
 var express = require('express');
 var passport = require('passport');
-
+var Keen = require('keen-js');
 var Client = require('../api/client/client.model')
 var auth = require('./auth.service');
+var keenDetails = require('../config/keen');
+var keen = new Keen({
+  projectId: keenDetails.projectId,
+  writeKey: keenDetails.writeKey,
+  readKey: keenDetails.readKey
+});
 
 var router = express.Router();
 
 // route to log in
 router.post('/login', passport.authenticate('login'), function(req, res) {
-	return res.status(200).json(req.user);
+  console.log(keen);
+  var loginEvent = {
+    user: {
+      name: req.user.name,
+      _id: req.user._id
+    },
+    keen: {
+      timestamp: new Date().toISOString()
+    }
+  };
+  keen.addEvent("logins", loginEvent, function(err, response){
+    if (err) {console.log(err)};
+    console.log(response);
+  });
+  return res.status(200).json(req.user);
 });
 
 router.get('/loggedin', function(req, res){
@@ -34,7 +54,20 @@ router.post('/signup', function(req, res) {
         // Bit of a hack :P
         req.body.username = req.body.username.name;
         passport.authenticate('login')(req,res,function(){
-        	return res.status(201).json(req.user);
+          var signupEvent = {
+            user: {
+              name: req.user.name,
+              _id: req.user._id,
+            },
+            keen: {
+              timestamp: new Date().toISOString()
+            }
+          };
+          keen.addEvent("signups", signupEvent, function(err, response){
+            if (err) {console.log(err)};
+            console.log(response);
+          });
+          return res.status(201).json(req.user);
         })
       })
     })

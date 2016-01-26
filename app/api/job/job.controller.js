@@ -16,6 +16,14 @@ var Applicant = require('../applicant/applicant.model');
 var twilio = require('twilio');
 var nodemailer = require('nodemailer');
 
+var Keen = require('keen-js');
+var keenDetails = require('../../config/keen');
+var keen = new Keen({
+  projectId: keenDetails.projectId,
+  writeKey: keenDetails.writeKey,
+  readKey: keenDetails.readKey
+});
+
 // create reusable transporter object using SMTP transport
 var transporter = nodemailer.createTransport({
     service: 'Gmail',
@@ -64,6 +72,23 @@ exports.create = function(req, res) {
   job.email = req.user.email;
   job.save(function(err){
     if (err) { return handleError(res, err); }
+    var newJobEvent = {
+      user: {
+        name: req.user.name,
+        _id: req.user._id
+      },
+      job: {
+        name: job.name,
+        url_name: job.url_name
+      },
+      keen: {
+        timestamp: new Date().toISOString()
+      }
+    };
+    // Send it to the "signups" collection
+    keen.addEvent("new_jobs", newJobEvent, function(err, response){
+      console.log(response);
+    });
     return res.status(200).json(job);
   })
 };
@@ -73,10 +98,31 @@ exports.update = function(req, res) {
   if(req.body._id) { delete req.body._id; }
   Job.findById(req.params.id, function (err, job) {
     if (err) { return handleError(res, err); }
+    var number_questions = job.questions.length;
     if(!job) { return res.status(404).send('Not Found'); }
     var updated = _.merge(job, req.body);
     if(req.body.questions)
       updated.questions = req.body.questions;
+    if(req.body.question){
+      var newQuestionEvent = {
+        user: {
+          name: req.user.name,
+          _id: req.user._id
+        },
+        job: {
+          name: job.name,
+          url_name: job.url_name
+        },
+        question: req.body.question,
+        keen: {
+          timestamp: new Date().toISOString()
+        }
+      };
+      // Send it to the "signups" collection
+      keen.addEvent("new_questions", newQuestionEvent, function(err, res){
+        console.log(res);
+      });
+    }
     if(req.body.name)
       updated.url_name = updated.urlSafeName(req.body.name);
     updated.save(function (err) {
@@ -122,7 +168,7 @@ exports.make = function(req, res) {
       return res.send(resp.toString());
     }
     var actionURL = '/api/jobs/recording/' + job._id;
-    resp.say("After the beep, start recording your question.")
+    resp.say("After the beep, start recording your question.");
     resp.record({
       maxLength: 1200,
       timeout: 40,

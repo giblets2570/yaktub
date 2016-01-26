@@ -10,38 +10,39 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 	$scope.user_signup = {
 		username: {}
 	};
-  	$scope.login = function(){
-  		Alert.success("Loading...").then(function(loading){
-  			loading.show();
-  			Client.login($scope.user_login).then(function(data){
-  				loading.hide();
-		    	$state.go('home.dashboard')
-		    }, function (error) {
-		    	loading.hide();
-		    	Alert.warning('Login credentials wrong!').then(function(alert){
-		    		alert.show();
-		    	});
-		    	$scope.user_login = {};
-		    });
-  		})
+
+	$scope.login = function(){
+		Alert.success("Loading...").then(function(loading){
+			loading.show();
+			Client.login($scope.user_login).then(function(data){
+				loading.hide();
+		    $state.go('home.dashboard')
+	    }, function (error) {
+	    	loading.hide();
+	    	Alert.warning('Login credentials wrong!').then(function(alert){
+	    		alert.show();
+	    	});
+	    	$scope.user_login = {};
+	    });
+		})
 	};
 	$scope.signup = function(){
 		Alert.success("Loading...").then(function(loading){
 			loading.show();
-		    Client.signup($scope.user_signup).then(function(data){
-		    	loading.hide();
-		    	$state.go('home.dashboard')
-		    }, function (error) {
-		    	loading.hide();
-		    	Alert.warning('Login credentials wrong!').then(function(alert){
-		    		alert.show();
-		    	});
-		    	$scope.user_signup = {
-					username: {}
-				};
-		    });
+	    Client.signup($scope.user_signup).then(function(data){
+				loading.hide();
+		    $state.go('home.dashboard')
+	    }, function (error) {
+	    	loading.hide();
+	    	Alert.warning('Login credentials wrong!').then(function(alert){
+	    		alert.show();
+	    	});
+	    	$scope.user_signup = {
+				username: {}
+			};
+	    });
 		})
-	}
+	};
 }])
 
 .controller('homeCtrl', ['$scope','$state','Client',function($scope,$state,Client){
@@ -53,7 +54,7 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
   };
 }])
 
-.controller('dashboardCtrl', ['$scope','$state','Job', function($scope,$state,Job){
+.controller('dashboardCtrl',['$scope','$state','Job','Alert',function($scope,$state,Job,Alert){
 	$scope.getJobs = function(){
 		Job.get({mine:true},'name url_name').then(function(data){
 			$scope.jobs = data;
@@ -65,12 +66,16 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 	}
 	$scope.saveJob = function(){
 		$scope.making_job = !$scope.making_job;
-		Job.create({
-			name: $scope.new_job_name
-		}).then(function(data){
-			$scope.jobs.push(data);
-			$state.go('home.job',{job_name: data.url_name})
-		})
+		Alert.success("Adding new job...").then(function(loading){
+			loading.show();
+			Job.create({
+				name: $scope.new_job_name
+			}).then(function(data){
+				$scope.jobs.push(data);
+				loading.hide();
+				$state.go('home.job',{job_name: data.url_name});
+			});
+		});
 	}
 }])
 
@@ -135,8 +140,9 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 	$scope.saveQuestion = function(){
 		$scope.adding_question = !$scope.adding_question;
 		$scope.job.questions.push({text: $scope.new_question});
+		var new_question = $scope.new_question;
 		$scope.new_question = '';
-		Job.update({questions:$scope.job.questions},$scope.job._id);
+		Job.update({questions:$scope.job.questions,question: new_question},$scope.job._id)
 	}
 	$scope.deleteQuestion = function(index){
 		$scope.job.questions.splice(index,1);
@@ -305,6 +311,7 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 	}
 	$scope.twilioSetup = function(){
 		Applicant.twilio($scope.applicant_id).then(function(data){
+			console.log(data);
 			Twilio.Device.setup(data);
 		})
 	}

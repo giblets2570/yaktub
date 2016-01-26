@@ -10,8 +10,8 @@ var config = require('./config/environment');
 module.exports = function(app) {
 
   app.use(function(req,res,next){
-    console.log(req.session);
-    console.log("?");
+    // console.log(req.session);
+    // console.log("?");
     next();
   });
 
