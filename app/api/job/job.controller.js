@@ -78,6 +78,7 @@ exports.create = function(req, res) {
         _id: req.user._id
       },
       job: {
+        _id: job._id,
         name: job.name,
         url_name: job.url_name
       },
@@ -110,6 +111,7 @@ exports.update = function(req, res) {
           _id: req.user._id
         },
         job: {
+          _id: job._id,
           name: job.name,
           url_name: job.url_name
         },
@@ -203,8 +205,6 @@ exports.twilioCallback = function(req, res) {
 
 exports.finish = function(req, res){
   Job.findById(req.params.id, function(err,job){
-    console.log("here");
-    console.log(job);
     if(err) { return handleError(res, err); }
     if(!job || !job.send_email) return res.status(200).send('Notification not sent');
       // send mail with defined transport object

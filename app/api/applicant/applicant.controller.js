@@ -20,6 +20,14 @@ var twilio = require('twilio');
 var capability = new twilio.Capability(twilioDetails.accountID, twilioDetails.authToken);
 capability.allowClientOutgoing(twilioDetails.applicantAppID);
 
+var Keen = require('keen-js');
+var keenDetails = require('../../config/keen');
+var keen = new Keen({
+  projectId: keenDetails.projectId,
+  writeKey: keenDetails.writeKey,
+  readKey: keenDetails.readKey
+});
+
 // Get list of calls
 exports.index = function(req, res) {
   var query = {}
@@ -46,6 +54,28 @@ exports.create = function(req, res) {
   var updated = _.merge(applicant, req.body);
   updated.save(function (err) {
     if (err) { return handleError(res, err); }
+    Job.findById(applicant.job, function(err, job){
+      var newApplicantEvent = {
+        applicant: {
+          _id: applicant._id,
+          name: applicant.name,
+          email: applicant.email,
+          phone: applicant.phone
+        },
+        job:{
+          _id: job._id,
+          name: job.name,
+          url_name: job.url_name
+        },
+        keen: {
+          timestamp: new Date().toISOString()
+        }
+      };
+      keen.addEvent("new_applicants", newApplicantEvent, function(err, response){
+        if (err) {console.log(err)};
+        console.log(response);
+      });
+    });
     return res.status(200).json(applicant);
   });
 };

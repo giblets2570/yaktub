@@ -1,3 +1,4 @@
 serve.sh
 node_modules/*
 public/libs/*
+app/config/local.env.js
