@@ -13,6 +13,9 @@ var _ = require('lodash');
 var Job = require('./job.model');
 var Applicant = require('../applicant/applicant.model');
 
+var Mailgun = require('mailgun').Mailgun;
+var mg = new Mailgun(process.env.MAILGUN_API_KEY);
+
 var twilio = require('twilio');
 var nodemailer = require('nodemailer');
 
@@ -207,22 +210,46 @@ exports.finish = function(req, res){
   Job.findById(req.params.id, function(err,job){
     if(err) { return handleError(res, err); }
     if(!job || !job.send_email) return res.status(200).send('Notification not sent');
-      // send mail with defined transport object
-      var host = req.protocol + '://' + req.get('Host');
-      var html = '<h1>New applicant for your job '+job.name+'</h1><br/><br/><p> View the new applicant <a href="'+host+'/home/'+job.url_name+'/applicants/'+req.params.applicant_id+'" target="_blank">here</a>.';
-      transporter.sendMail({
-        from: 'Yak tub <tomkeohanemurray@gmail.com>', // sender address
-        to: job.email, // list of receivers
-        subject: 'New applicant!', // Subject line
-        html: html // html body
-      }, function(error, info){
-        if(error){
-          console.log(error)
-          return res.status(200).json(error);
+    // send mail with defined transport object
+    var host = req.protocol + '://' + req.get('Host');
+    var text = '<h1>New applicant for your job '+job.name+'</h1><br/><br/><p> View the new applicant <a href="'+host+'/home/'+job.url_name+'/applicants/'+req.params.applicant_id+'" target="_blank">here</a>.';
+    mg.sendRaw('admin@yaktub.co',
+    ['tomkeohanemurray@gmail.com'],
+    'From: admin@yaktub.co' +
+      '\nTo: ' + 'tomkeohanemurray@gmail.com' +
+      '\nContent-Type: text/html; charset=utf-8' +
+      '\nSubject: New applicant' +
+      '\n\n' + text,
+      function(err) {
+        if(err){
+          console.log(err)
         }
-        console.log('Message sent: ' + info.response);
-        return res.status(200).send('Message sent: ' + info.response);
+        console.log('Message sent');
+      }
+    );
+    Applicant.findById(req.params.applicant_id, function(err, applicant){
+      var applicantDoneEvent = {
+        applicant: {
+          _id: applicant._id,
+          name: applicant.name,
+          email: applicant.email,
+          phone: applicant.phone
+        },
+        job: {
+          _id: job._id,
+          name: job.name,
+          url_name: job.url_name
+        },
+        keen: {
+          timestamp: new Date().toISOString()
+        }
+      };
+      // Send it to the "signups" collection
+      keen.addEvent("applicants_done", applicantDoneEvent, function(err, res){
+        console.log(res);
       });
+    })
+    return res.status(200).json(err);
   })
 }
 

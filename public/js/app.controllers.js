@@ -79,7 +79,7 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 	}
 }])
 
-.controller('jobCtrl', ['$scope','$state','$stateParams','$location','Job',function($scope,$state,$stateParams,$location,Job){
+.controller('jobCtrl', ['$scope','$state','$stateParams','$location','$timeout','Job','Alert',function($scope,$state,$stateParams,$location,$timeout,Job,Alert){
 	$scope.getShareableUrl = function(){
 		var result = $location.protocol() + "://" + $location.host();
 		if($location.port())
@@ -156,12 +156,19 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 		Job.update({questions:$scope.job.questions},$scope.job._id);
 	}
 	$scope.success = function () {
-        console.log('Copied!');
-    };
+      console.log('Copied!');
+      var countdown;
+      Alert.success("Copied!").then(function(loading){
+      	loading.show();
+      	countdown = $timeout(function(){
+					loading.hide();
+				},1000);
+      });
+  };
 
-    $scope.fail = function (err) {
-        console.error('Error!', err);
-    };
+  $scope.fail = function (err) {
+    console.error('Error!', err);
+  };
 }])
 
 .controller('applicantsCtrl', ['$scope','$state','$stateParams','Job','Applicant', function($scope,$state,$stateParams,Job,Applicant){
