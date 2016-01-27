@@ -11,6 +11,7 @@ html
     meta(name='description', content='Yak Tub automated interview software')
     meta(name='author', content='Tom Murray')
     link(rel='icon', href='favicon.ico')
+    link(href="pusher-realtime-chat-widget/src/pusher-chat.css" rel="stylesheet")
     title Yak Tub
 
     // Keen.js script
@@ -33,6 +34,7 @@ html
     //- // NAVIGATION
     //- // MAIN CONTENT
     <div id='MainView' ui-view></div>
+  script(src="https://js.pusher.com/3.0/pusher.min.js")
   script(src='libs/jquery/dist/jquery.min.js')
   script(src='libs/angular/angular.min.js')
   script(src='//static.twilio.com/libs/twiliojs/1.2/twilio.min.js')

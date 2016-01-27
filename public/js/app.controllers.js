@@ -10,7 +10,6 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 	$scope.user_signup = {
 		username: {}
 	};
-
 	$scope.login = function(){
 		Alert.success("Loading...").then(function(loading){
 			loading.show();
@@ -46,6 +45,13 @@ angular.module('app.controllers', ['app.services','angular-clipboard'])
 }])
 
 .controller('homeCtrl', ['$scope','$state','Client',function($scope,$state,Client){
+	var pusher = new Pusher('9d60e889329cae081239', {
+      encrypted: true
+    });
+    var channel = pusher.subscribe('test_channel');
+    channel.bind('my_event', function(data) {
+      alert(data.message);
+    });
 	$scope.logout = function(){
     Client.logout().then(function(data){
     	$state.go('landing-page')

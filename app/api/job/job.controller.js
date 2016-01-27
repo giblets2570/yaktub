@@ -27,15 +27,6 @@ var keen = new Keen({
   readKey: keenDetails.readKey
 });
 
-// create reusable transporter object using SMTP transport
-var transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-        user: 'tomkeohanemurray@gmail.com',
-        pass: 'bogaboga'
-    }
-});
-
 // Get list of jobs
 exports.index = function(req, res) {
   var query = {};
@@ -216,7 +207,7 @@ exports.finish = function(req, res){
     mg.sendRaw('admin@yaktub.co',
     ['tomkeohanemurray@gmail.com'],
     'From: admin@yaktub.co' +
-      '\nTo: ' + 'tomkeohanemurray@gmail.com' +
+      '\nTo: ' + job.email +
       '\nContent-Type: text/html; charset=utf-8' +
       '\nSubject: New applicant' +
       '\n\n' + text,
