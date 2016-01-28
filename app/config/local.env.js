@@ -7,7 +7,7 @@
 
 module.exports = {
   DOMAIN: 'http://localhost:8080',
-  SESSION_SECRET: "yakhubio-secret",
+  SESSION_SECRET: "yakhubio2-secret",
   // Control debug level for modules using visionmedia/debug
   DEBUG: '',
   TWILIO_ACCOUNT_ID: 'AC9e540d572431d3af66681b92102093ca',

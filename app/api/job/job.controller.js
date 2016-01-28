@@ -205,7 +205,7 @@ exports.finish = function(req, res){
     var host = req.protocol + '://' + req.get('Host');
     var text = '<h1>New applicant for your job '+job.name+'</h1><br/><br/><p> View the new applicant <a href="'+host+'/home/'+job.url_name+'/applicants/'+req.params.applicant_id+'" target="_blank">here</a>.';
     mg.sendRaw('admin@yaktub.co',
-    ['tomkeohanemurray@gmail.com'],
+    [job.email],
     'From: admin@yaktub.co' +
       '\nTo: ' + job.email +
       '\nContent-Type: text/html; charset=utf-8' +
