@@ -3,7 +3,7 @@
 *
 * Description
 */
-angular.module('app.services', ['mgcrea.ngStrap'])
+angular.module('app.services', ['mgcrea.ngStrap','ngFileUpload'])
 
 .factory('Client', ['$q','$http', function($q,$http){
 	return {
@@ -80,7 +80,7 @@ angular.module('app.services', ['mgcrea.ngStrap'])
 	}
 }])
 
-.factory('Applicant', ['$q','$http', function($q,$http){
+.factory('Applicant', ['$q','$http', 'Upload',function($q,$http,Upload){
 	return {
 		get: function(params){
 			var defered = $q.defer();
@@ -141,6 +141,40 @@ angular.module('app.services', ['mgcrea.ngStrap'])
 		      defered.reject('0');
 		    });
 		    return defered.promise;
+		},
+		sendFile: function(file){
+			var defered = $q.defer();
+			$http({
+				method:'GET',
+				url:'/api/applicants/upload',
+				cache: false
+			}).success(function(data){
+				var ext = '.'+file.name.split('.').pop();
+				Upload.upload({
+				    url: 'https://yakhub-chats.s3.amazonaws.com/', //S3 upload url including bucket name
+				    method: 'POST',
+				    data: {
+				        key: 'uploads/'+(new Date()).getTime()+randomString(16)+ext, // the key to store the file on S3, could be file name or customized
+				        AWSAccessKeyId: data.key,
+				        acl: 'public-read', // sets the access to the uploaded file in the bucket: private, public-read, ...
+				        policy: data.policy, // base64-encoded json policy (see article below)
+				        signature: data.signature, // base64-encoded signature based on policy string (see article below)
+				        "Content-Type": file.type != '' ? file.type : 'application/octet-stream', // content type of the file (NotEmpty)
+				        // filename: file.name, // this is needed for Flash polyfill IE8-9
+				        file: file
+				    }
+				}).then(function (resp) {
+		            defered.resolve(resp);
+		        }, function (error) {
+		            defered.reject(error);
+		        }, function (evt) {
+		            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+		            console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+		        });
+			}).error(function(error){
+				defered.reject(error);
+			})
+			return defered.promise
 		},
 		answer: function(data){
 			var defered = $q.defer();
@@ -294,3 +328,11 @@ angular.module('app.services', ['mgcrea.ngStrap'])
 	  	}
 	}
 }]);
+
+function randomString(length) {
+	var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	var result = '';
+	for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+
+	return result;
+};

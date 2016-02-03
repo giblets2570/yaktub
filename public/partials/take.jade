@@ -22,7 +22,8 @@ div(ng-repeat='question in job.questions' ng-show='interview_started')
 		.col-md-offset-2.col-md-8
 			h4 Question {{$index + 1}}
 			p {{question.text}}
-			button.btn.button(ng-show='!question.answered && !question.answering' ng-click='answerQuestion(question)') ANSWER
-			button.btn.button.end(ng-show='!question.answered && question.answering' ng-click='endQuestion(question)') END
+			button.btn.button(ng-show='!question.answered && !question.answering' ng-click='answerQuestion(question,$index)') ANSWER
+			button.btn.button(ng-show='!question.answered && question.answering && question.connecting') CONNECTING
+			button.btn.button.end(ng-show='!question.answered && question.answering && !question.connecting' ng-click='endQuestion(question)') END
 			button.btn.button.done(ng-show='question.answered') ANSWERED
 	hr

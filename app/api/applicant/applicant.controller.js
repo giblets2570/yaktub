@@ -13,6 +13,10 @@ var _ = require('lodash');
 var Applicant = require('./applicant.model');
 var Job = require('../job/job.model');
 
+// Get aws details
+var awsDetails = require('../../config/aws');
+var crypto = require('crypto');
+
 var twilio = require('twilio');
 var outgoingNumber = require('../../config/twilio').outgoingNumber;
 var twilioDetails = require('../../config/twilio');
@@ -33,7 +37,7 @@ exports.index = function(req, res) {
   var query = {}
   if(req.query.job)
     query.job = req.query.job;
-  Applicant.find(query,function(err,applicants){
+  Applicant.find(query,req.query.fields,function(err,applicants){
     if(err) { return handleError(res, err); }
     return res.status(200).json(applicants);
   })
@@ -114,6 +118,7 @@ exports.twilio = function(req, res){
     if(err) { return handleError(res, err); }
     if(!applicant) { return res.status(403).json({'message': 'No agent'}); }
     var token = capability.generate();
+    console.log(token);
     return res.status(201).json(token);
   });
 }
@@ -123,26 +128,19 @@ exports.twilio = function(req, res){
  * App logic routes outside CRUD
  */
 
-// Deletes a call from the DB.
+// Answers the question
 
 exports.answer = function(req, res) {
   Applicant.findById(req.body.applicant,function(err, applicant){
     if(err) { return handleError(res, err); }
     if(!applicant) { return res.status(401).send('0'); }
     if(req.body.question){
-      applicant.answers.push({
+      var index = applicant.answers.push({
         question: req.body.question
       });
       applicant.save(function(err){
         if(err) { return handleError(res, err); }
-        var k;
-        for (var i = applicant.answers.length - 1; i >= 0; i--) {
-          if(applicant.answers[i].text == req.body.text){
-            k = i;
-            break;
-          }
-        }
-        var id = applicant.answers[k]._id;
+        var id = applicant.answers[index-1]._id;
         var actionURL = '/api/applicants/recording/' + applicant._id + '/' + id;
         var resp = new twilio.TwimlResponse();
         resp.say("Record after the beep.")
@@ -151,6 +149,7 @@ exports.answer = function(req, res) {
           maxLength: 1200,
           timeout: 40
         });
+        console.log(resp.toString());
         return res.send(resp.toString());
       })
     }
@@ -168,6 +167,16 @@ exports.twilioCallback = function(req, res) {
     var answer = applicant.answers.id(req.params.answer_id);
     answer.recording_url = req.body.RecordingUrl;
     answer.duration = parseInt(req.body.RecordingDuration, 10);
+    if(answer.recording_url == ""){
+      var index;
+      for (var i = applicant.answers.length - 1; i >= 0; i--) {
+        if(applicant.answers[i]._id.toString() == answer._id.toString()){
+          index = i;
+          break;
+        }
+      };
+      applicant.answers.splice(index,1);
+    }
     applicant.save(function(err){
       if(err) { return handleError(res, err); }
       resp.say('Thanks for calling!');
@@ -175,6 +184,44 @@ exports.twilioCallback = function(req, res) {
     });
   });
 };
+
+exports.upload = function(req, res){
+  var bucket_name = 'yakhub-chats';
+  var myS3Account = new s3instance(awsDetails.aws_access_key_id, awsDetails.aws_secret_key);
+  var policy = myS3Account.writePolicy('uploads/', bucket_name, 60, 10);
+  return res.json(policy);
+}
+
+function s3instance(accessKey, secretKey) {
+
+  this.accessKey = accessKey;
+  this.secretKey = secretKey;
+
+  this.writePolicy = function(key, bucket, duration, filesize) {
+    var dateObj = new Date;
+    var dateExp = new Date(dateObj.getTime() + duration * 1000);
+    var policy = {
+      "expiration":dateExp.getUTCFullYear() + "-" + dateExp.getUTCMonth() + 1 + "-" + dateExp.getUTCDate() + "T" + dateExp.getUTCHours() + ":" + dateExp.getUTCMinutes() + ":" + dateExp.getUTCSeconds() + "Z",
+      "conditions":[
+        { "bucket":bucket },
+        ["starts-with", "$key", ""],
+        { "acl":"public-read" },
+        ["starts-with", "$Content-Type", ""],
+        ["content-length-range", 0, 10 * 1024 * 1024]
+      ]
+    };
+    var policyString = JSON.stringify(policy);
+    var policyBase64 = new Buffer(policyString).toString('base64');
+    var signature = crypto.createHmac("sha1", this.secretKey).update(policyBase64);
+    var accessKey = this.accessKey;
+    var s3Credentials = {
+      policy:policyBase64,
+      signature:signature.digest("base64"),
+      key:accessKey
+    };
+    return s3Credentials;
+  };
+}
 
 /**
  * Error handling route

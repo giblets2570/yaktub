@@ -250,5 +250,6 @@ exports.finish = function(req, res){
  */
 
 function handleError(res, err) {
+  console.log(err);
   return res.status(500).send(err);
 }

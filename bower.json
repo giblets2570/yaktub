@@ -26,6 +26,9 @@
     "font-awesome": "~4.4.0",
     "angular-ui-router": "ui-router#~0.2.15",
     "angular-clipboard": "~1.1.2",
-    "keen-js": "~3.3.0"
+    "keen-js": "~3.3.0",
+    "angularAudioRecorder": "~1.4.1",
+    "recorderjs": "~0.0.0",
+    "ng-file-upload-shim": "~11.2.3"
   }
 }

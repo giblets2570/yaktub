@@ -31,7 +31,7 @@
 					.col-md-8
 						p {{$index+1}}: {{answer.question}}
 					.col-md-4
-						audio-player(source='answer.recording_url')
+						audio-player(ng-show='applicant.loaded' source='answer.recording_url' loaded='applicant.loaded')
 						//- audio(controls)
 						//- 	source(ng-src="{{getTrustedUrl(answer.recording_url)}}" type="audio/mpeg")
 						//- 	|Your browser does not support the audio element.
