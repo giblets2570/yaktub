@@ -289,6 +289,11 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 	$scope.getJob = function(){
 		Job.show({url_name: $scope.job_name}).then(function(data){
 			$scope.job = data;
+			for (var i = 0; i < $scope.job.questions.length; i++) {
+				$scope.answers.push({
+					question: $scope.job.questions[i].text
+				})
+			};
 			$scope.timer = 60*data.timer;
 			$scope.number_questions = $scope.job.questions.length;
 		});
@@ -313,15 +318,11 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 		if($scope.answering_question) return;
 		$scope.answering_question = true;
 		question.answering = !question.answering;
-		$scope.answers.push({
-			question: question.text
-		});
-		$scope.answers_length = $scope.answers.length;
-		console.log($scope.answers);
 	}
 	$scope.endQuestion = function(question){
 		question.answered = true;
-		$scope.loading = true;
+		question.loading = true;
+		$scope.current_question = -1;
 	}
 	$scope.endInterview = function(){
 		if (angular.isDefined(countdown)) {
@@ -342,21 +343,22 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 	$scope.convertMP3 = true;
 	$scope.conversionDone = function(blob,index){
 		console.log(blob.audioModel);
+		console.log(index);
 		var file = new File([blob.audioModel], "filename.mp3");
 		console.log(file);
 		Applicant.sendFile(file).then(function(data){
 			var filename = data.config.data.file.name;
 			var uploaded_filename = data.config.url + data.config.data.key;
 			console.log(uploaded_filename);
-			$scope.answers[$scope.answers.length-1].recording_url=uploaded_filename;
+			$scope.answers[index].recording_url=uploaded_filename;
 			Applicant.update({
 				answers: $scope.answers
 			}, $scope.applicant_id).then(function(data){
 				$scope.answering_question = false;
 				$scope.questions_answered += 1;
 				$scope.loading = false;
+				$scope.job.questions[index].loading = false;
 				console.log($scope.questions_answered,$scope.number_questions);
-				$scope.current_question = -1;
 				if($scope.questions_answered == $scope.number_questions)
 					$scope.endInterview();
 			})

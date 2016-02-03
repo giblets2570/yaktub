@@ -27,7 +27,7 @@ div(ng-repeat='question in job.questions' ng-show='interview_started')
 			//- button.btn.button.end(ng-show='!question.answered && question.answering && !question.connecting' ng-click='endQuestion(question)') END
 			//- button.btn.button.done(ng-show='question.answered') ANSWERED
 			button.btn.button.done(ng-show='question.answered') ANSWERED
-			button.btn.button.end(ng-show='loading  && !question.answered') LOADING
+			p(ng-show='question.loading') Uploading answer, please don't leave this page
 			ng-audio-recorder#audioInput(ng-hide='question.answered || !currentQuestion($index)' audio-model='recordedInput' convert-mp3='convertMP3' on-record-start='answerQuestion(question,$index)' on-conversion-complete='conversionDone(recorder,$index)' on-record-complete='endQuestion(question)')
 				div(ng-if='recorder.isAvailable' ng-init='answered=false')
 					//- button.btn.btn-success(ng-click='recorder.startRecord()', type='button', ng-disabled='recorder.status.isRecording')
