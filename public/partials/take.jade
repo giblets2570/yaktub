@@ -22,8 +22,19 @@ div(ng-repeat='question in job.questions' ng-show='interview_started')
 		.col-md-offset-2.col-md-8
 			h4 Question {{$index + 1}}
 			p {{question.text}}
-			button.btn.button(ng-show='!question.answered && !question.answering' ng-click='answerQuestion(question,$index)') ANSWER
-			button.btn.button(ng-show='!question.answered && question.answering && question.connecting') CONNECTING
-			button.btn.button.end(ng-show='!question.answered && question.answering && !question.connecting' ng-click='endQuestion(question)') END
+			//- button.btn.button(ng-show='!question.answered && !question.answering' ng-click='answerQuestion(question,$index)') ANSWER
+			//- button.btn.button(ng-show='!question.answered && question.answering && question.connecting') CONNECTING
+			//- button.btn.button.end(ng-show='!question.answered && question.answering && !question.connecting' ng-click='endQuestion(question)') END
+			//- button.btn.button.done(ng-show='question.answered') ANSWERED
 			button.btn.button.done(ng-show='question.answered') ANSWERED
+			button.btn.button.end(ng-show='loading  && !question.answered') LOADING
+			ng-audio-recorder#audioInput(ng-hide='question.answered || !currentQuestion($index)' audio-model='recordedInput' convert-mp3='convertMP3' on-record-start='answerQuestion(question,$index)' on-conversion-complete='conversionDone(recorder,$index)' on-record-complete='endQuestion(question)')
+				div(ng-if='recorder.isAvailable' ng-init='answered=false')
+					//- button.btn.btn-success(ng-click='recorder.startRecord()', type='button', ng-disabled='recorder.status.isRecording')
+					button.btn.button(ng-hide='recorder.status.isRecording && !answered' ng-click='recorder.startRecord(); console.log("Hello")') ANSWER
+						//- | Start Record
+					button.btn.button.end(ng-click='recorder.stopRecord()', type='button', ng-hide='recorder.status.isRecording === false') END
+					//- button.btn.button.end(ng-show='!question.answered && question.answering && !question.connecting' ng-click='endQuestion(question,recorder)') END
+				div(ng-if='!recorder.isAvailable')
+					| Message for users when recording is not possible.
 	hr

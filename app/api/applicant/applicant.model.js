@@ -23,7 +23,7 @@ var applicantSchema = mongoose.Schema({
 		question: String,
 		// Data from twilio
 		recording_url: {type : String, default: ''},
-		duration: {type : Number, default: 0},
+		// duration: {type : Number, default: 0},
 	}],
 
 	// Client driven data from the applicant
