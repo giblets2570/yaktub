@@ -7,15 +7,15 @@
 			button.btn(type='button' style='margin-right:20px' ui-sref='home.settings') Settings
 			button.btn(ng-click='logout()') Logout
 
-		ng-audio-recorder#audioInput(audio-model='recordedInput' convert-mp3='convertMP3' on-record-start='start()' on-conversion-complete='conversionDone(recorder)' on-conversion-start='conversionStart()')
-			div(ng-if='recorder.isAvailable')
-				button.btn.btn-success(ng-click='recorder.startRecord()', type='button', ng-disabled='recorder.status.isRecording')
-					| Start Record
-				button.btn.btn-danger(ng-click='recorder.stopRecord()', type='button', ng-disabled='recorder.status.isRecording === false')
-					| Stop Record
-				button.btn.btn-warning(ng-click='recorder.playbackRecording()', type='button', ng-disabled='recorder.status.isRecording || !recorder.audioModel')
-					| Play Back
-			div(ng-if='!recorder.isAvailable')
-				| Message for users when recording is not possible.
+		//- ng-audio-recorder#audioInput(audio-model='recordedInput' convert-mp3='convertMP3' on-record-start='start()' on-conversion-complete='conversionDone(recorder)' on-conversion-start='conversionStart()')
+		//- 	div(ng-if='recorder.isAvailable')
+		//- 		button.btn.btn-success(ng-click='recorder.startRecord()', type='button', ng-disabled='recorder.status.isRecording')
+		//- 			| Start Record
+		//- 		button.btn.btn-danger(ng-click='recorder.stopRecord()', type='button', ng-disabled='recorder.status.isRecording === false')
+		//- 			| Stop Record
+		//- 		button.btn.btn-warning(ng-click='recorder.playbackRecording()', type='button', ng-disabled='recorder.status.isRecording || !recorder.audioModel')
+		//- 			| Play Back
+		//- 	div(ng-if='!recorder.isAvailable')
+		//- 		| Message for users when recording is not possible.
 
 	<div class='col-md-6 dashboard' id='nestedView' ui-view></div>
