@@ -323,6 +323,12 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 		question.answered = true;
 		question.loading = true;
 		$scope.current_question = -1;
+		if($scope.questions_answered+1==$scope.number_questions){
+			if (angular.isDefined(countdown)) {
+				$interval.cancel(countdown);
+				countdown = undefined;
+			}
+		}
 	}
 	$scope.endInterview = function(){
 		if (angular.isDefined(countdown)) {
