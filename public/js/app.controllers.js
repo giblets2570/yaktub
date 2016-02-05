@@ -269,26 +269,25 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 	}
 })
 
-.controller('takeCtrl', ['$scope','$state','$stateParams','$interval','Job','Applicant',function($scope,$state,$stateParams,$interval,Job,Applicant){
+.controller('takeCtrl', ['$scope','$state','$stateParams','$interval','Job','Applicant','Alert',function($scope,$state,$stateParams,$interval,Job,Applicant,Alert){
 	$scope.job_name = $stateParams.job_name;
 	$scope.applicant_id = $stateParams.applicant_id;
-	$scope.answers = [];
 	$scope.current_question = -1;
+	$scope.files = [];
 	$scope.checkIfStartedPreviously = function(){
 		Applicant.show({},'answers started',$scope.applicant_id).then(function(data){
-			console.log(data.answers);
 			if(data.started)
 				$state.go('error.description',{error_id: 2})
+			$scope.getJob();
 		})
 	}
 	$scope.checkIfStartedPreviously();
-	$scope.answering_question = false;
 	$scope.questions_answered = 0;
 	var countdown;
-	var connection_refresh;
 	$scope.getJob = function(){
 		Job.show({url_name: $scope.job_name}).then(function(data){
 			$scope.job = data;
+			$scope.answers = [];
 			for (var i = 0; i < $scope.job.questions.length; i++) {
 				$scope.answers.push({
 					question: $scope.job.questions[i].text
@@ -298,13 +297,11 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 			$scope.number_questions = $scope.job.questions.length;
 		});
 	}
-	$scope.getJob();
 	$scope.startInterview = function(){
+		$scope.interview_started = !$scope.interview_started;
 		Applicant.update({
 			started: true
 		},$scope.applicant_id).then(function(data){
-			console.log(data);
-			$scope.interview_started = !$scope.interview_started;
 			countdown = $interval(function(){
 				$scope.timer--;
 				if($scope.timer <= 0)
@@ -313,15 +310,11 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 		});
 	}
 	$scope.answerQuestion = function(question,index){
-		console.log(question,index);
 		$scope.current_question = index;
-		if($scope.answering_question) return;
-		$scope.answering_question = true;
 		question.answering = !question.answering;
 	}
 	$scope.endQuestion = function(question){
 		question.answered = true;
-		question.loading = true;
 		$scope.current_question = -1;
 		if($scope.questions_answered+1==$scope.number_questions){
 			if (angular.isDefined(countdown)) {
@@ -335,7 +328,6 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 			$interval.cancel(countdown);
 			countdown = undefined;
 		}
-		// Twilio.Device.disconnectAll();
 		Job.finish($scope.job._id, $scope.applicant_id).then(function(data){
 			$state.go('interview.end',{job_name: $scope.job_name});
 		})
@@ -346,78 +338,48 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 		if(seconds.length < 2) seconds = "0"+seconds;
 		return minutes+":"+seconds;
 	}
-	$scope.convertMP3 = true;
-	$scope.conversionDone = function(blob,index){
-		console.log(blob.audioModel);
-		console.log(index);
-		var file = new File([blob.audioModel], "filename.mp3");
-		console.log(file);
-		Applicant.sendFile(file).then(function(data){
-			var filename = data.config.data.file.name;
-			var uploaded_filename = data.config.url + data.config.data.key;
-			console.log(uploaded_filename);
-			$scope.answers[index].recording_url=uploaded_filename;
-			Applicant.update({
-				answers: $scope.answers
-			}, $scope.applicant_id).then(function(data){
-				$scope.answering_question = false;
-				$scope.questions_answered += 1;
-				$scope.loading = false;
-				$scope.job.questions[index].loading = false;
-				console.log($scope.questions_answered,$scope.number_questions);
-				if($scope.questions_answered == $scope.number_questions)
-					$scope.endInterview();
+	$scope.uploadAnswers = function(){
+		if($scope.files.length==0) return;
+		var fileObj = $scope.files.pop();
+		console.log(fileObj);
+		Alert.success("Uploading answer","Please don't leave this page").then(function(loading){
+			loading.show();
+			Applicant.sendFile(fileObj.file).then(function(data){
+				var filename = data.config.data.file.name;
+				var uploaded_filename = data.config.url + data.config.data.key;
+				console.log($scope.answers);
+				console.log($scope.answers.length);
+				$scope.answers[fileObj.answer].recording_url=uploaded_filename;
+				Applicant.update({
+					answers: $scope.answers
+				}, $scope.applicant_id).then(function(data){
+					loading.hide();
+					Alert.success("Answer saved").then(function(done){
+						done.show();
+						$scope.questions_answered += 1;
+						// console.log($scope.questions_answered,$scope.number_questions);
+						if($scope.questions_answered == $scope.number_questions)
+							$scope.endInterview();
+					})
+				})
 			})
 		})
 	}
+	$scope.convertMP3 = true;
+	$scope.conversionDone = function(blob,index){
+		var file = new File([blob.audioModel], "filename.mp3");
+		console.log(file);
+		$scope.files.push({
+			file: file,
+			answer: index
+		})
+	}
+	var checker = $interval(function(){
+		$scope.uploadAnswers();
+	},1000);
 	$scope.currentQuestion = function(index){
 		return $scope.current_question == -1 || $scope.current_question == index ? true : false
 	}
-	// $scope.twilioSetup = function(){
-	// 	Applicant.twilio($scope.applicant_id).then(function(data){
-	// 		console.log(data);
-	// 		Twilio.Device.setup(data);
-	// 	})
-	// }
-	// $scope.twilioSetup();
-	// //Twilio javascript
- //    Twilio.Device.ready(function (device) {
- //        console.log(device);
- //        // $scope.$apply();
- //        Twilio.Device.disconnectAll();
- //    });
-
- //    Twilio.Device.error(function (error) {
- //    	console.log(error);
- //    	$scope.job.questions[$scope.question_index].connecting = false;
- //    	$scope.job.questions[$scope.question_index].answered = false;
- //    	$scope.job.questions[$scope.question_index].answering = false;
- //    	$scope.answering_question = false;
- //    	alert('Error with that last question, could you try again?');
- //    	// $scope.call_button_text = 'Session expired, refresh page';
- //    //     $scope.$apply();
- //    });
-
- //    Twilio.Device.connect(function (conn) {
- //    	console.log('connecting');
- //    	$scope.job.questions[$scope.question_index].connecting = false;
- //    	if (angular.isDefined(connection_refresh)) {
-	// 		$interval.cancel(connection_refresh);
-	// 		connection_refresh = undefined;
-	// 	}
- //    	$scope.$apply();
- //    });
-
- //    Twilio.Device.offline(function (device){
- //    	console.log("Offline");
- //    	console.log(device);
- //    })
-
- //    Twilio.Device.disconnect(function (conn) {
- //        console.log('disconnecting');
- //        $scope.job.questions[$scope.question_index].connecting = false;
- //        // $scope.$apply();
- //    });
 }])
 
 .controller('settingsCtrl', ['$scope','Client', function($scope,Client){
