@@ -274,6 +274,7 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 	$scope.applicant_id = $stateParams.applicant_id;
 	$scope.current_question = -1;
 	$scope.files = [];
+	$scope.loading_alerts = [];
 	$scope.checkIfStartedPreviously = function(){
 		Applicant.show({},'answers started',$scope.applicant_id).then(function(data){
 			if(data.started)
@@ -316,6 +317,10 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 	$scope.endQuestion = function(question){
 		question.answered = true;
 		$scope.current_question = -1;
+		Alert.success("Uploading answer","Please don't leave this page",null).then(function(loading){
+			loading.show();
+			$scope.loading_alerts.push(loading);
+		})
 		if($scope.questions_answered+1==$scope.number_questions){
 			if (angular.isDefined(countdown)) {
 				$interval.cancel(countdown);
@@ -342,25 +347,23 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 		if($scope.files.length==0) return;
 		var fileObj = $scope.files.pop();
 		console.log(fileObj);
-		Alert.success("Uploading answer","Please don't leave this page").then(function(loading){
-			loading.show();
-			Applicant.sendFile(fileObj.file).then(function(data){
-				var filename = data.config.data.file.name;
-				var uploaded_filename = data.config.url + data.config.data.key;
-				console.log($scope.answers);
-				console.log($scope.answers.length);
-				$scope.answers[fileObj.answer].recording_url=uploaded_filename;
-				Applicant.update({
-					answers: $scope.answers
-				}, $scope.applicant_id).then(function(data){
-					loading.hide();
-					Alert.success("Answer saved").then(function(done){
-						done.show();
-						$scope.questions_answered += 1;
-						// console.log($scope.questions_answered,$scope.number_questions);
-						if($scope.questions_answered == $scope.number_questions)
-							$scope.endInterview();
-					})
+		var loading = $scope.loading_alerts.shift();
+		Applicant.sendFile(fileObj.file).then(function(data){
+			var filename = data.config.data.file.name;
+			var uploaded_filename = data.config.url + data.config.data.key;
+			console.log($scope.answers);
+			console.log($scope.answers.length);
+			$scope.answers[fileObj.answer].recording_url=uploaded_filename;
+			Applicant.update({
+				answers: $scope.answers
+			}, $scope.applicant_id).then(function(data){
+				loading.hide();
+				Alert.success("Answer saved","",3).then(function(done){
+					done.show();
+					$scope.questions_answered += 1;
+					// console.log($scope.questions_answered,$scope.number_questions);
+					if($scope.questions_answered == $scope.number_questions)
+						$scope.endInterview();
 				})
 			})
 		})
@@ -368,7 +371,6 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 	$scope.convertMP3 = true;
 	$scope.conversionDone = function(blob,index){
 		var file = new File([blob.audioModel], "filename.mp3");
-		console.log(file);
 		$scope.files.push({
 			file: file,
 			answer: index
