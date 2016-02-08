@@ -18,7 +18,7 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 		    $state.go('home.dashboard')
 	    }, function (error) {
 	    	loading.hide();
-	    	Alert.warning('Login credentials wrong!').then(function(alert){
+	    	Alert.warning('Login credentials wrong!','',3).then(function(alert){
 	    		alert.show();
 	    	});
 	    	$scope.user_login = {};
@@ -33,7 +33,7 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 		    $state.go('home.dashboard')
 	    }, function (error) {
 	    	loading.hide();
-	    	Alert.warning('Login credentials wrong!').then(function(alert){
+	    	Alert.warning('Login credentials wrong!','',3).then(function(alert){
 	    		alert.show();
 	    	});
 	    	$scope.user_signup = {
@@ -317,15 +317,20 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 	$scope.endQuestion = function(question){
 		question.answered = true;
 		$scope.current_question = -1;
-		Alert.success("Uploading answer","Please don't leave this page",null).then(function(loading){
-			loading.show();
-			$scope.loading_alerts.push(loading);
-		})
 		if($scope.questions_answered+1==$scope.number_questions){
 			if (angular.isDefined(countdown)) {
 				$interval.cancel(countdown);
 				countdown = undefined;
 			}
+			Alert.warning("Uploading your answer","Please don't leave this page until this popup disappears",null,"floater-middle-page").then(function(loading){
+				loading.show();
+				$scope.loading_alerts.push(loading);
+			})
+		}else{
+			Alert.success("Uploading answer","Please don't leave this page",null).then(function(loading){
+				loading.show();
+				$scope.loading_alerts.push(loading);
+			})
 		}
 	}
 	$scope.endInterview = function(){

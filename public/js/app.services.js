@@ -296,12 +296,13 @@ angular.module('app.services', ['mgcrea.ngStrap','ngFileUpload'])
 
 .factory('Alert', ['$alert','$q',function($alert,$q){
 	return {
-		success: function(title,content,duration){
+		success: function(title,content,duration,placement){
 			var defered = $q.defer();
+			if(!placement){placement='floater-top-left'}
 	  		var alert = $alert({
 				title: title,
 				content: content,
-				placement: 'floater-top-left', 
+				placement: placement,
 				type: 'success',
 				duration: duration,
 				show: false
@@ -311,14 +312,15 @@ angular.module('app.services', ['mgcrea.ngStrap','ngFileUpload'])
 		  	})
 		  	return defered.promise;
 		},
-		warning: function(title,content){
+		warning: function(title,content,duration,placement){
 	  		var defered = $q.defer();
+	  		if(!placement){placement='floater-top-left'}
 	  		var alert = $alert({
 				title: title,
 				content: content,
-				placement: 'floater-top-left', 
+				placement: placement,
 				type: 'warning',
-				duration: 3,
+				duration: duration,
 				show: false
 		  	});
 		  	alert.$promise.then(function(){
