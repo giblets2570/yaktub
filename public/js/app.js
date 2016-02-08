@@ -143,6 +143,7 @@ angular.module('app', ['ngAnimate','ui.router','app.controllers','app.directives
         url: '/interview',
         abstract: true,
         templateUrl: 'partials/interview',
+        controller: 'interviewCtrl'
       })
 
       .state('interview.details', {
@@ -175,3 +176,19 @@ angular.module('app', ['ngAnimate','ui.router','app.controllers','app.directives
       });
 
 });
+
+// angular.module('recorderDemo', [
+//     'angularAudioRecorder'
+//   ])
+//   .controller('DemoController', function ($scope, $timeout) {
+//     console.log("Loaded");
+//     $scope.timeLimit = 10;
+
+
+//   }).config(function (recorderServiceProvider) {
+//   recorderServiceProvider
+//     .forceSwf(false)
+//     //.setSwfUrl('/lib/recorder.swf')
+//     .withMp3Conversion(true)
+//   ;
+// });

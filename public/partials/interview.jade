@@ -1,7 +1,7 @@
 .row
 	.col-md-6.right-line
 		center.interview
-			img.icon(src='assets/images/noun.svg')
+			img.icon(src='assets/images/noun.svg' style='margin-top:-50px;')
 			h1.yak-tub Yak Tub
 			h4.tagline - Bathe in applicants -
 			div.description-box
@@ -30,6 +30,12 @@
 					span.strong
 						| automatically submit your recordings 
 					| for review. Sit tight for a response email.
+					br
+					br
+					span.strong
+						| If you want to test your microphone, click 
+						a(href='' ng-click='showmicrophoneTestmodal()') here
+						|.
 
 
 	<div class='col-md-6 dashboard' ui-view></div>

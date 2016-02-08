@@ -269,6 +269,14 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 	}
 })
 
+.controller('interviewCtrl', ['$scope','$modal',function($scope,$modal){
+	$scope.timeLimit = 10;
+	var microphoneTestmodal = $modal({scope: $scope, templateUrl: '../templates/microphone-test.html', show: false});
+	$scope.showmicrophoneTestmodal = function() {
+		microphoneTestmodal.$promise.then(microphoneTestmodal.show);
+	};
+}])
+
 .controller('takeCtrl', ['$scope','$state','$stateParams','$interval','Job','Applicant','Alert',function($scope,$state,$stateParams,$interval,Job,Applicant,Alert){
 	$scope.job_name = $stateParams.job_name;
 	$scope.applicant_id = $stateParams.applicant_id;
