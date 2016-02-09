@@ -100,7 +100,7 @@ angular.module('app.controllers', ['app.services','angular-clipboard','angularAu
 
 .controller('jobCtrl', ['$scope','$state','$stateParams','$location','$timeout','Job','Alert',function($scope,$state,$stateParams,$location,$timeout,Job,Alert){
 	$scope.getShareableUrl = function(){
-		var result = "https://" + $location.host();
+		var result = $location.protocol() + "://" + $location.host();
 		if($location.host() == "localhost" && $location.port())
 			result+=":"+$location.port();
 		result += '/interview/'+$scope.job.url_name;

@@ -8,9 +8,12 @@
 	.col-md-4
 		label(for='show_followed') Show followed up:
 		input(type='checkbox' id='show_followed' ng-model='show_filtered')
+.row
+	.col-md-offset-4.col-md-8
+		|Filter by name:
+		input(type='text' ng-model='searchText')
 
-
-.row(ng-repeat='applicant in applicants | applicantsFilter : show_filtered')
+.row(ng-repeat='applicant in applicants | applicantsFilter : show_filtered | filter : searchText')
 	.col-md-12
 		center
 			.applicant-card(class='{{isFollowed(applicant)}}')
