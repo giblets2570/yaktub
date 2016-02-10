@@ -17,6 +17,13 @@ body{
   font-size: 4em;
 }
 
+.page-change {
+  color: grey;
+  float: left;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
 .enter{
   width: 250px;
   margin: 10px;

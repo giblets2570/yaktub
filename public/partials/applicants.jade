@@ -11,15 +11,29 @@
 .row
 	.col-md-offset-4.col-md-8
 		|Filter by name:
-		input(type='text' ng-model='searchText')
+		input(type='text' ng-model='filter.search_text')
+.row
+	.col-md-offset-6.col-md-6
+		a.page-change(href='' ng-click='changePage(filter.page-1)')
+			span Prev
+		div.dropdown
+			button#dateDropdown.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='true',style="float:left;")
+				strong
+					span.ng-cloak Page {{filter.page+1}}
+				//- span.caretspan.glyphicon.glyphicon-triangle-bottom
+			ul.dropdown-menu(aria-labelledby='dateDropdown')
+				li(ng-repeat='i in getNumber(num_of_pages)')
+					a(href='', ng-click='changePage(i)') Page {{i+1}}
+		a.page-change(href='' ng-click='changePage(filter.page+1)')
+			span Next
 
-.row(ng-repeat='applicant in applicants | applicantsFilter : show_filtered | filter : {name: searchText}')
+.row(ng-repeat='applicant in applicants | applicantsFilter : show_filtered | filter : {name: filter.search_text} | limitTo:page_entries:page_entries*filter.page')
 	.col-md-12
 		center
 			.applicant-card(class='{{isFollowed(applicant)}}')
 				.row
 					.col-md-6
-						h3 {{$index+1}}: {{applicant.name}}
+						h3 {{$index+1+filter.page*page_entries}}: {{applicant.name}}
 					.col-md-6
 						label(for='followed') Followed up:
 						input(type='checkbox' id='followed' ng-model='applicant.followed_up' ng-change='followedUp(applicant)')

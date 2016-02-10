@@ -176,19 +176,3 @@ var app = angular.module('app', ['ngAnimate','mgcrea.ngStrap','ui.router','ngFil
       });
 
 });
-
-// angular.module('recorderDemo', [
-//     'angularAudioRecorder'
-//   ])
-//   .controller('DemoController', function ($scope, $timeout) {
-//     console.log("Loaded");
-//     $scope.timeLimit = 10;
-
-
-//   }).config(function (recorderServiceProvider) {
-//   recorderServiceProvider
-//     .forceSwf(false)
-//     //.setSwfUrl('/lib/recorder.swf')
-//     .withMp3Conversion(true)
-//   ;
-// });
