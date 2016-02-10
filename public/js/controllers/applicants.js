@@ -7,7 +7,8 @@ app.controller('applicantsCtrl', ['$scope','$state','$stateParams','$filter','$l
 	$scope.num_of_pages = 1;
 	$scope.filter = {
 		search_text:'',
-		page: 0
+		page: 0,
+		stars:[true,true,true,true]
 	}
 	$scope.getJob = function(c){
 		Job.show({url_name: $scope.job_name}).then(function(data){
@@ -26,6 +27,26 @@ app.controller('applicantsCtrl', ['$scope','$state','$stateParams','$filter','$l
 				$scope.applicants = data;
 				$scope.applyFilter(true);
 			})
+		}
+	}
+	// Returns the class of the star icon. If rating is less that value, return
+	// an empty star, and vice versa.
+	$scope.star = function(rating, value){
+		return ((rating >= value) ? 'glyphicon glyphicon-star' :  'glyphicon glyphicon-star-empty');
+	}
+	// Function that does the star rating.
+	$scope.scoreApplicant = function(applicant,num){
+		applicant.score==1 && num==1 ? applicant.score = 0 : applicant.score = num;
+		Applicant.update({score: applicant.score},applicant._id).then(function(data){
+		});
+	}
+	// When the star is changed, we update the url query string
+	$scope.changeStar = function(star){
+		$scope.filter.stars[star] = !$scope.filter.stars[star]
+		var oneFalse = false
+		for (var i = $scope.filter.stars.length - 1; i >= 0; i--) {
+			if(!$scope.filter.stars[i])
+				oneFalse = true
 		}
 	}
 	$scope.getJob($scope.getApplicants);
@@ -75,12 +96,14 @@ app.controller('applicantsCtrl', ['$scope','$state','$stateParams','$filter','$l
 }])
 
 .filter('applicantsFilter', function(){
-	return function(applicants, show_filtered){
-		if(!applicants||show_filtered) return applicants;
+	return function(applicants, params){
+		if(!applicants||!params||!params.stars) return applicants;
+		console.log(params);
 		var result = [];
 		for (var i = 0; i < applicants.length; i++) {
-			if(!applicants[i].followed_up)
-				result.push(applicants[i])
+			if(!params.stars[applicants[i].score]){continue;}
+			// if(!applicants[i].followed_up)
+			result.push(applicants[i])
 		};
 		return result;
 	}

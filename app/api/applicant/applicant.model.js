@@ -26,6 +26,8 @@ var applicantSchema = mongoose.Schema({
 		// duration: {type : Number, default: 0},
 	}],
 
+	score: {type: Number, default: 0},
+
 	// Client driven data from the applicant
 	followed_up: {type : Boolean, default: false},
 

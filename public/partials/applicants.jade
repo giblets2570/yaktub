@@ -9,11 +9,10 @@
 		label(for='show_followed') Show followed up:
 		input(type='checkbox' id='show_followed' ng-model='show_filtered')
 .row
-	.col-md-offset-4.col-md-8
+	.col-md-6
 		|Filter by name:
 		input(type='text' ng-model='filter.search_text')
-.row
-	.col-md-offset-6.col-md-6
+	.col-md-6
 		a.page-change(href='' ng-click='changePage(filter.page-1)')
 			span Prev
 		div.dropdown
@@ -27,7 +26,13 @@
 		a.page-change(href='' ng-click='changePage(filter.page+1)')
 			span Next
 
-.row(ng-repeat='applicant in applicants | applicantsFilter : show_filtered | filter : {name: filter.search_text} | limitTo:page_entries:page_entries*filter.page')
+.row
+	.col-md-6
+		a.filter(href='' data-template-url='/templates/filter-popover.html', data-animation='am-flip-x', data-auto-close='1', bs-popover)
+			| Filter
+			img(src='/assets/images/filter.png')
+
+.row(ng-repeat='applicant in applicants | applicantsFilter : filter | filter : {name: filter.search_text} | limitTo:page_entries:page_entries*filter.page')
 	.col-md-12
 		center
 			.applicant-card(class='{{isFollowed(applicant)}}')
@@ -52,6 +57,15 @@
 						//- audio(controls)
 						//- 	source(ng-src="{{getTrustedUrl(answer.recording_url)}}" type="audio/mpeg")
 						//- 	|Your browser does not support the audio element.
+				hr
+				.row
+					.col-md-2
+						h4(style='float:left;')
+							strong Score
+					.col-md-10(style='margin-top:8px;')
+						span(class='{{star(applicant.score, 1)}}' ng-click='scoreApplicant(applicant,1)')
+						span(class='{{star(applicant.score, 2)}}' ng-click='scoreApplicant(applicant,2)')
+						span(class='{{star(applicant.score, 3)}}' ng-click='scoreApplicant(applicant,3)')
 				hr
 				h4 Notes
 				.row(style='text-align:left;')
