@@ -31,14 +31,28 @@
 		a.filter(href='' data-template-url='/templates/filter-popover.html', data-animation='am-flip-x', data-auto-close='1', bs-popover)
 			| Filter
 			img(src='/assets/images/filter.png')
+	.col-md-6
+		p Number page entries:
+		select(ng-model='page_entries' ng-change='changePageEntries()')
+			option(value='1') 1
+			option(value='2') 2
+			option(value='3') 3
+			option(value='4') 4
+			option(value='5') 5
+			option(value='6') 6
+			option(value='7') 7
+			option(value='8') 8
+			option(value='9') 9
+			option(value='10') 10
+hr
 
-.row(ng-repeat='applicant in applicants | applicantsFilter : filter | filter : {name: filter.search_text} | limitTo:page_entries:page_entries*filter.page')
+.row(ng-repeat='applicant in applicants | applicantsFilter : filter | filter : {name: filter.search_text} | limitTo:filter.page_entries:filter.page_entries*filter.page')
 	.col-md-12
 		center
 			.applicant-card(class='{{isFollowed(applicant)}}')
 				.row
 					.col-md-6
-						h3 {{$index+1+filter.page*page_entries}}: {{applicant.name}}
+						h3 {{$index+1+filter.page*filter.page_entries}}: {{applicant.name}}
 					.col-md-6
 						label(for='followed') Followed up:
 						input(type='checkbox' id='followed' ng-model='applicant.followed_up' ng-change='followedUp(applicant)')

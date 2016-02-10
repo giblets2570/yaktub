@@ -3,12 +3,13 @@ app.controller('applicantsCtrl', ['$scope','$state','$stateParams','$filter','$l
 	$scope.applicant_id = $stateParams.applicant_id;
 	$scope.show_filtered = true;
 	// Number of entries shown per page
-	$scope.page_entries = 5;
+	$scope.page_entries = '5';
 	$scope.num_of_pages = 1;
 	$scope.filter = {
 		search_text:'',
 		page: 0,
-		stars:[true,true,true,true]
+		stars:[true,true,true,true],
+		page_entries: 5
 	}
 	$scope.getJob = function(c){
 		Job.show({url_name: $scope.job_name}).then(function(data){
@@ -28,6 +29,9 @@ app.controller('applicantsCtrl', ['$scope','$state','$stateParams','$filter','$l
 				$scope.applyFilter(true);
 			})
 		}
+	}
+	$scope.changePageEntries = function(){
+		$scope.filter.page_entries = parseInt($scope.page_entries);
 	}
 	// Returns the class of the star icon. If rating is less that value, return
 	// an empty star, and vice versa.
@@ -72,7 +76,7 @@ app.controller('applicantsCtrl', ['$scope','$state','$stateParams','$filter','$l
 		$scope.filtered = $filter('applicantsFilter')($scope.applicants, newVal);
 		if($scope.filtered){
 			$scope.total_items = $scope.filtered.length;
-			$scope.num_of_pages = Math.ceil($scope.total_items / $scope.page_entries);
+			$scope.num_of_pages = Math.ceil($scope.total_items / $scope.filter.page_entries);
 		}
 	}
 	// Helper function that gets an array of numbers, for the pages.
