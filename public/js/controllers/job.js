@@ -83,9 +83,9 @@ app.controller('jobCtrl', ['$scope','$state','$stateParams','$location','$timeou
 			loading.hide();
 		},1000);
       });
-  };
+  	};
 
-  $scope.fail = function (err) {
-    console.error('Error!', err);
-  };
+  	$scope.fail = function (err) {
+    	console.error('Error!', err);
+  	};
 }])

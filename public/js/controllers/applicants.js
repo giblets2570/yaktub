@@ -1,4 +1,4 @@
-app.controller('applicantsCtrl', ['$scope','$state','$stateParams','$filter','$location','Job','Applicant', function($scope,$state,$stateParams,$filter,$location,Job,Applicant){
+app.controller('applicantsCtrl', ['$scope','$state','$stateParams','$filter','$location','Job','Applicant','Alert', function($scope,$state,$stateParams,$filter,$location,Job,Applicant,Alert){
 	$scope.job_name = $stateParams.job_name;
 	$scope.applicant_id = $stateParams.applicant_id;
 	$scope.show_filtered = true;
@@ -6,7 +6,8 @@ app.controller('applicantsCtrl', ['$scope','$state','$stateParams','$filter','$l
 	$scope.page_entries = '5';
 	$scope.num_of_pages = 1;
 	$scope.filter = {
-		search_text:'',
+		show_archived: false,
+		search_text: '',
 		page: 0,
 		stars:[true,true,true,true],
 		page_entries: 5
@@ -43,6 +44,17 @@ app.controller('applicantsCtrl', ['$scope','$state','$stateParams','$filter','$l
 		applicant.score==1 && num==1 ? applicant.score = 0 : applicant.score = num;
 		Applicant.update({score: applicant.score},applicant._id).then(function(data){
 		});
+	}
+	$scope.archive = function(applicant){
+		Applicant.update({archived: applicant.archived},applicant._id).then(function(data){
+		});
+	}
+	$scope.getShareableUrl = function(applicant){
+		var result = $location.protocol() + "://" + $location.host();
+		if($location.host() == "localhost" && $location.port())
+			result+=":"+$location.port();
+		result += '/home/'+$scope.job.url_name+'/applicants/'+applicant._id;
+		return result;
 	}
 	// When the star is changed, we update the url query string
 	$scope.changeStar = function(star){
@@ -94,6 +106,17 @@ app.controller('applicantsCtrl', ['$scope','$state','$stateParams','$filter','$l
 		$scope.filter.page = value;
 		$location.search("page",$scope.filter.page+1);
 	}
+	$scope.success = function () {
+      console.log('Copied!');
+      var countdown;
+      Alert.success("Copied!",'',3).then(function(loading){
+      	loading.show();
+      });
+  	};
+
+  	$scope.fail = function (err) {
+    	console.error('Error!', err);
+  	};
 	$scope.$watch('applicantsFilter', function (newVal, oldVal) {
 		$scope.applyFilter(newVal);
 	}, true);
@@ -106,6 +129,7 @@ app.controller('applicantsCtrl', ['$scope','$state','$stateParams','$filter','$l
 		var result = [];
 		for (var i = 0; i < applicants.length; i++) {
 			if(!params.stars[applicants[i].score]){continue;}
+			if(!params.show_archived&&applicants[i].archived){continue;}
 			// if(!applicants[i].followed_up)
 			result.push(applicants[i])
 		};

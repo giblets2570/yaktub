@@ -8,6 +8,8 @@
 	.col-md-4
 		label(for='show_followed') Show followed up:
 		input(type='checkbox' id='show_followed' ng-model='show_filtered')
+		label(for='show_archived') Show archived:
+		input(type='checkbox' id='show_archived' ng-model='filter.show_archived')
 .row
 	.col-md-6
 		|Filter by name:
@@ -56,6 +58,8 @@ hr
 					.col-md-6
 						label(for='followed') Followed up:
 						input(type='checkbox' id='followed' ng-model='applicant.followed_up' ng-change='followedUp(applicant)')
+						label(for='archived') Archived:
+						input(type='checkbox' id='archived' ng-model='applicant.archived' ng-change='archive(applicant)')
 				.row
 					.col-md-6
 						p {{applicant.email}}
@@ -89,3 +93,6 @@ hr
 						textarea.form-control(rows='3' ng-model='applicant.notes' ng-show='applicant.editing_notes')
 						button.btn.btn-success(ng-click='saveNotes(applicant)' ng-show='applicant.editing_notes') Save
 					.col-md-1
+				hr
+				h4 Applicant url
+				button.btn.btn-default(clipboard text="getShareableUrl(applicant)" on-copied="success()" on-error="fail(err)") Copy

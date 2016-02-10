@@ -30,6 +30,7 @@ var applicantSchema = mongoose.Schema({
 
 	// Client driven data from the applicant
 	followed_up: {type : Boolean, default: false},
+	archived: {type : Boolean, default: false},
 
 	notes: {type : String, default: ''},
 });
