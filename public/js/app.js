@@ -3,7 +3,7 @@
 // *
 // * Description
 // */
-angular.module('app', ['ngAnimate','ui.router','app.controllers','app.directives'])
+var app = angular.module('app', ['ngAnimate','mgcrea.ngStrap','ui.router','ngFileUpload','angular-clipboard','angularAudioRecorder'])
 
 .config(function($stateProvider, $urlRouterProvider, $locationProvider,$httpProvider) {
     //================================================

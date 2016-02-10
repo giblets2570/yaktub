@@ -1,11 +1,4 @@
-/**
-* app.directives Module
-*
-* Description
-*/
-angular.module('app.directives', [])
-
-.directive('audioPlayer',function($interval) {
+app.directive('audioPlayer',function($interval) {
     return {
         restrict:'E',
         scope: {
