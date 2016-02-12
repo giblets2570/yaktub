@@ -24,10 +24,10 @@ div(ng-repeat='question in job.questions' ng-show='interview_started')
 			p {{question.text}}
 			button.btn.button.done(ng-show='question.answered') ANSWERED
 			p(ng-show='question.loading') Uploading answer, please don't leave this page
-			ng-audio-recorder#audioInput(ng-hide='question.answered || !currentQuestion($index)' audio-model='recordedInput' convert-mp3='convertMP3' on-record-start='answerQuestion(question,$index)' on-conversion-complete='conversionDone(recorder,$index)' on-record-complete='endQuestion(question)')
+			ng-audio-recorder#audioInput(ng-hide='alerts_shown>=number_questions || question.answered || !currentQuestion($index)' audio-model='recordedInput' convert-mp3='convertMP3' on-record-start='answerQuestion(question,$index)' on-conversion-complete='conversionDone(recorder,$index)' on-record-complete='endQuestion(question)')
 				div(ng-if='recorder.isAvailable' ng-init='answered=false')
 					button.btn.button(ng-hide='recorder.status.isRecording && !answered' ng-click='recorder.startRecord(); console.log("Hello")') ANSWER
-					button.btn.button.end(ng-click='recorder.stopRecord()', type='button', ng-hide='recorder.status.isRecording === false') END
+					button.btn.button.end(id="{{ 'button-' + $parent.$parent.$index }}" ng-click='recorder.stopRecord()', type='button', ng-hide='recorder.status.isRecording === false') END
 				div(ng-if='!recorder.isAvailable')
 					p Your browser does not support audio recording, please use latest version of
 						a(href="https://www.google.com/chrome/browser" target="_blank") Google Chrome 

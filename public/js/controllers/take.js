@@ -1,9 +1,10 @@
-app.controller('takeCtrl', ['$scope','$state','$stateParams','$interval','Job','Applicant','Alert',function($scope,$state,$stateParams,$interval,Job,Applicant,Alert){
+app.controller('takeCtrl', ['$scope','$state','$stateParams','$interval','$timeout','Job','Applicant','Alert',function($scope,$state,$stateParams,$interval,$timeout,Job,Applicant,Alert){
 	$scope.job_name = $stateParams.job_name;
 	$scope.applicant_id = $stateParams.applicant_id;
 	$scope.current_question = -1;
 	$scope.files = [];
 	$scope.loading_alerts = [];
+	$scope.recording = false;
 	$scope.checkIfStartedPreviously = function(){
 		Applicant.show({},'answers started',$scope.applicant_id).then(function(data){
 			if(data.started)
@@ -40,24 +41,29 @@ app.controller('takeCtrl', ['$scope','$state','$stateParams','$interval','Job','
 		});
 	}
 	$scope.answerQuestion = function(question,index){
+		$scope.recording = true;
 		$scope.current_question = index;
 		question.answering = !question.answering;
 	}
-	$scope.endQuestion = function(question){
+	$scope.alerts_shown = 0
+	$scope.endQuestion = function(question,end){
+		$scope.recording=false;
 		question.answered = true;
 		$scope.current_question = -1;
-		if($scope.questions_answered+1==$scope.number_questions){
+		if($scope.alerts_shown+1>=$scope.number_questions){
 			if (angular.isDefined(countdown)) {
 				$interval.cancel(countdown);
 				countdown = undefined;
 			}
 			Alert.warning("Uploading your answer","Please don't leave this page until this popup disappears",null,"floater-middle-page").then(function(loading){
 				loading.show();
+				$scope.alerts_shown+=1
 				$scope.loading_alerts.push(loading);
 			})
 		}else{
 			Alert.success("Uploading answer","Please don't leave this page",null).then(function(loading){
 				loading.show();
+				$scope.alerts_shown+=1
 				$scope.loading_alerts.push(loading);
 			})
 		}
@@ -67,9 +73,20 @@ app.controller('takeCtrl', ['$scope','$state','$stateParams','$interval','Job','
 			$interval.cancel(countdown);
 			countdown = undefined;
 		}
-		Job.finish($scope.job._id, $scope.applicant_id).then(function(data){
-			$state.go('interview.end',{job_name: $scope.job_name});
-		})
+		if($scope.recording){
+			$scope.alerts_shown+=$scope.number_questions;
+			$scope.questions_answered+=$scope.number_questions
+			$timeout(function() {
+				var id = '#button-'+$scope.current_question
+				console.log(id)
+				angular.element(id).triggerHandler('click');
+			}, 10);
+		}else{
+			console.log("Finishing job");
+			Job.finish($scope.job._id, $scope.applicant_id).then(function(data){
+				$state.go('interview.end',{job_name: $scope.job_name});
+			})
+		}
 	}
 	$scope.timeDisplay = function(){
 		var minutes = parseInt($scope.timer/60).toString();
@@ -79,14 +96,12 @@ app.controller('takeCtrl', ['$scope','$state','$stateParams','$interval','Job','
 	}
 	$scope.uploadAnswers = function(){
 		if($scope.files.length==0) return;
-		var fileObj = $scope.files.pop();
-		console.log(fileObj);
+		var fileObj = $scope.files.pop(0);
+		console.log($scope);
 		var loading = $scope.loading_alerts.shift();
 		Applicant.sendFile(fileObj.file).then(function(data){
 			var filename = data.config.data.file.name;
 			var uploaded_filename = data.config.url + data.config.data.key;
-			console.log($scope.answers);
-			console.log($scope.answers.length);
 			$scope.answers[fileObj.answer].recording_url=uploaded_filename;
 			Applicant.update({
 				answers: $scope.answers
@@ -95,8 +110,7 @@ app.controller('takeCtrl', ['$scope','$state','$stateParams','$interval','Job','
 				Alert.success("Answer saved","",3).then(function(done){
 					done.show();
 					$scope.questions_answered += 1;
-					// console.log($scope.questions_answered,$scope.number_questions);
-					if($scope.questions_answered == $scope.number_questions)
+					if($scope.questions_answered >= $scope.number_questions)
 						$scope.endInterview();
 				})
 			})
@@ -113,6 +127,10 @@ app.controller('takeCtrl', ['$scope','$state','$stateParams','$interval','Job','
 	var checker = $interval(function(){
 		$scope.uploadAnswers();
 	},1000);
+	$scope.$watch('$$childHead.$$childHead.recorder',function(newValue){
+		console.log(newValue);
+		console.log($scope);
+	});
 	$scope.currentQuestion = function(index){
 		return $scope.current_question == -1 || $scope.current_question == index ? true : false
 	}
